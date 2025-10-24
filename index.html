@@ -148,7 +148,7 @@
     <div class="song-list" id="songList"></div>
 
     <h3 id="currentTitle">No song selected</h3>
-    <audio id="audio"></audio>
+    <audio id="audio" crossorigin="anonymous"></audio>
 
     <div class="controls">
       <button id="back5">⏪ -5s</button>
@@ -168,6 +168,8 @@
     const songs = [
       {
         title: "Ransom",
+        url: "https://dl.dropboxusercontent.com/scl/fi/luwd8s86vof4rvufmu4e7/Lil-Tecca-Ransom-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=8es0stu8bxfg8gvbw06zm6dqd&st=krsgjj8a&dl=0",
+        title: "Ransom",
         url: "https://dl.dropboxusercontent.com/scl/fi/luwd8s86vof4rvufmu4e7/Lil-Tecca-Ransom-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=8es0stu8bxfg8gvbw06zm6dqd&st=krsgjj8a&dl=0"
       }
       // Add more songs here:
@@ -175,7 +177,7 @@
     ];
 
     const songList = document.getElementById("songList");
-    const audio = document.getElementById("audio");
+    const audioElement = document.getElementById("audio");
     const playPause = document.getElementById("playPause");
     const back5 = document.getElementById("back5");
     const forward5 = document.getElementById("forward5");
@@ -183,6 +185,16 @@
     const progress = document.getElementById("progress");
     const volume = document.getElementById("volume");
     const currentTitle = document.getElementById("currentTitle");
+
+    // Setup Web Audio API for boosted volume
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const track = audioCtx.createMediaElementSource(audioElement);
+    const gainNode = audioCtx.createGain();
+    track.connect(gainNode).connect(audioCtx.destination);
+
+    document.body.addEventListener("click", () => {
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }, { once: true });
 
     // Generate song buttons
     songs.forEach((song, index) => {
@@ -194,40 +206,41 @@
     });
 
     function loadSong(index) {
-      audio.src = songs[index].url;
+      audioElement.src = songs[index].url;
       currentTitle.textContent = songs[index].title;
-      audio.play();
+      audioElement.play();
       playPause.textContent = "⏸️";
     }
 
     playPause.onclick = () => {
-      if (audio.paused) {
-        audio.play();
+      if (audioElement.paused) {
+        audioElement.play();
         playPause.textContent = "⏸️";
       } else {
-        audio.pause();
+        audioElement.pause();
         playPause.textContent = "▶️";
       }
     };
 
-    back5.onclick = () => { audio.currentTime -= 5; };
-    forward5.onclick = () => { audio.currentTime += 5; };
+    back5.onclick = () => { audioElement.currentTime -= 5; };
+    forward5.onclick = () => { audioElement.currentTime += 5; };
 
     repeat.onclick = () => {
-      audio.loop = !audio.loop;
-      repeat.style.color = audio.loop ? "orange" : "white"; // visual toggle
+      audioElement.loop = !audioElement.loop;
+      repeat.style.color = audioElement.loop ? "grey" : "white";
     };
 
-    audio.ontimeupdate = () => {
-      progress.value = (audio.currentTime / audio.duration) * 100 || 0;
+    audioElement.ontimeupdate = () => {
+      progress.value = (audioElement.currentTime / audioElement.duration) * 100 || 0;
     };
 
     progress.oninput = () => {
-      audio.currentTime = (progress.value / 100) * audio.duration;
+      audioElement.currentTime = (progress.value / 100) * audioElement.duration;
     };
 
     volume.oninput = () => {
-      audio.volume = volume.value;
+      // Volume slider now boosts up to 3x normal volume
+      gainNode.gain.value = volume.value * 3;
     };
   </script>
 </body>
