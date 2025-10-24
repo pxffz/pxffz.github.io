@@ -154,6 +154,7 @@
       <button id="back5">⏪ -5s</button>
       <button id="playPause">▶️</button>
       <button id="forward5">⏩ +5s</button>
+      <button id="repeat">🔁</button>
     </div>
 
     <input type="range" id="progress" class="slider" min="0" max="100" value="0">
@@ -163,13 +164,13 @@
   </div>
 
   <script>
-    // 🎵 ADD YOUR SONGS HERE
+    // 🎵 Add your songs here
     const songs = [
       {
         title: "Ransom",
         url: "https://dl.dropboxusercontent.com/scl/fi/luwd8s86vof4rvufmu4e7/Lil-Tecca-Ransom-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=8es0stu8bxfg8gvbw06zm6dqd&st=krsgjj8a&dl=0"
       }
-      // You can add more songs like this:
+      // Add more songs here:
       // { title: "Song Name", url: "https://dl.dropboxusercontent.com/...mp3" }
     ];
 
@@ -178,6 +179,7 @@
     const playPause = document.getElementById("playPause");
     const back5 = document.getElementById("back5");
     const forward5 = document.getElementById("forward5");
+    const repeat = document.getElementById("repeat");
     const progress = document.getElementById("progress");
     const volume = document.getElementById("volume");
     const currentTitle = document.getElementById("currentTitle");
@@ -210,6 +212,11 @@
 
     back5.onclick = () => { audio.currentTime -= 5; };
     forward5.onclick = () => { audio.currentTime += 5; };
+
+    repeat.onclick = () => {
+      audio.loop = !audio.loop;
+      repeat.style.color = audio.loop ? "orange" : "white"; // visual toggle
+    };
 
     audio.ontimeupdate = () => {
       progress.value = (audio.currentTime / audio.duration) * 100 || 0;
