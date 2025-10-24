@@ -1,66 +1,74 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="https://pxffz.github.io/pxffzz.github.io/common.js"></script>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="https://pxffz.github.io/pxffzz.github.io/index.css" />
-<meta property="og:title" content="Saturn Proxy ">
-<meta property="og:description" content="The best place to Access The Internet Freely And Access your favorite games with Saturn Proxy.">
-<meta property="og:image" content="https://www.saturnproxy.games/public/images/saturn1.png">
-<meta property="og:url" content="https://www.saturnproxy.games">
-<meta property="og:type" content="website">
-<meta name="theme-color" content="#8246BE">
-<title>SaturnProxy | Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glowing Firefly Background</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .firefly {
+      position: absolute;
+      background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+      opacity: 0.8;
+      width: 6px;
+      height: 6px;
+      animation: flicker 3s infinite ease-in-out alternate;
+      filter: blur(3px);
+    }
+
+    @keyframes flicker {
+      0% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.2; transform: scale(0.8); }
+    }
+  </style>
 </head>
 <body>
+  <script>
+    const numFireflies = 80; // how many glowing circles
+    const fireflies = [];
 
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FPH1ZBXNNS"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    for (let i = 0; i < numFireflies; i++) {
+      const f = document.createElement('div');
+      f.classList.add('firefly');
+      document.body.appendChild(f);
 
-  gtag('config', 'G-FPH1ZBXNNS');
-</script>
+      f.style.left = Math.random() * window.innerWidth + 'px';
+      f.style.top = Math.random() * window.innerHeight + 'px';
+      f.dataset.dx = (Math.random() - 0.5) * 0.8;
+      f.dataset.dy = (Math.random() - 0.5) * 0.8;
 
-<div id="loader" class="content" style="position: absolute; z-index: 99999999; background-color: var(--background-light); display: flex; justify-content: center; align-items: center; flex-direction: column;">
-<div class="container" style="margin-bottom: 25px;">
-<div class="dot"></div>
-<div class="dot"></div>
-<div class="dot"></div>
-<div class="dot"></div>
-</div>
-<h3 id="loader-text">Just a moment while we get everything set up...</h3>
-<link rel="stylesheet" href="https://pxffz.github.io/pxffzz.github.io/loader.css">
-<script src="https://pxffz.github.io/pxffzz.github.io/loader.js"></script>
-</div>
+      fireflies.push(f);
+    }
 
-<div class="content">
-<div id="sidebar"></div>
-<iframe class="main" src="/pages/home.html"></iframe>
-</div>
+    function animate() {
+      fireflies.forEach(f => {
+        let x = parseFloat(f.style.left);
+        let y = parseFloat(f.style.top);
+        let dx = parseFloat(f.dataset.dx);
+        let dy = parseFloat(f.dataset.dy);
+
+        x += dx;
+        y += dy;
+
+        if (x < 0 || x > window.innerWidth) f.dataset.dx = -dx;
+        if (y < 0 || y > window.innerHeight) f.dataset.dy = -dy;
+
+        f.style.left = x + 'px';
+        f.style.top = y + 'px';
+      });
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
 </body>
-<script>
-const code = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a', 'Enter'];
-let currentKeyIndex = 0;
-
-document.addEventListener('keydown', (event) => {
-if (event.key === code[currentKeyIndex]) {
-currentKeyIndex++;
-if (currentKeyIndex === code.length) {
-window.location.pathname = "/images/videos/quirky.mp4"
-currentKeyIndex = 0;
-}
-} else {
-currentKeyIndex = 0;
-}
-});
-</script>
 </html>
-
-
-
-
