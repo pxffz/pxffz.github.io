@@ -166,15 +166,33 @@
   <script>
     // 🎵 Add your songs here
     const songs = [
-      {
-        title: "Ransom",
-        url: "https://dl.dropboxusercontent.com/scl/fi/luwd8s86vof4rvufmu4e7/Lil-Tecca-Ransom-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=8es0stu8bxfg8gvbw06zm6dqd&st=krsgjj8a&dl=0",
-        title: "Ransom",
-        url: "https://dl.dropboxusercontent.com/scl/fi/luwd8s86vof4rvufmu4e7/Lil-Tecca-Ransom-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=8es0stu8bxfg8gvbw06zm6dqd&st=krsgjj8a&dl=0"
-      }
-      // Add more songs here:
-      // { title: "Song Name", url: "https://dl.dropboxusercontent.com/...mp3" }
-    ];
+  { title: "Ransom - Lil Tecca", url: "https://dl.dropboxusercontent.com/scl/fi/luwd8s86vof4rvufmu4e7/Lil-Tecca-Ransom-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=8es0stu8bxfg8gvbw06zm6dqd&st=krsgjj8a&dl=0" },
+  { title: "500lbs - Lil Tecca", url: "https://dl.dropboxusercontent.com/scl/fi/4jyrdn710z8udk041367o/Lil-Tecca-500lbs-Official-Audio-Lil-Tecca.mp3?rlkey=vwl6mxphfbi1m82x6lwowzkjz&st=0hd251z6&dl=0" },
+  { title: "TV OFF - Kendrick Lamar", url: "https://dl.dropboxusercontent.com/scl/fi/l0lxg4sii5k6y7916vala/Kendrick-Lamar-tv-off-Official-Audio-Kendrick-Lamar.mp3?rlkey=1yhv84lbb9z9w5ow2c00jtfr7&st=ocuyf8od&dl=0" },
+  { title: "Not Like Us - Kendrick Lamar", url: "https://dl.dropboxusercontent.com/scl/fi/ydelvccjhl7kh6j8126n3/Kendrick-Lamar-Not-Like-Us-KendrickLamarVEVO.mp3?rlkey=8yg6uuql9o3uevsm3m6drobzh&st=k2619iz6&dl=0" },
+  { title: "Robbery - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/bgmogl61w0fbbf3rlfqhi/Juice-WRLD-Robbery-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=4no8kslzlao743q0v1mih82hi&st=pleqk1nf&dl=0" },
+  { title: "Righteous - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/6jsrxfuwlf6nw1izq33qn/Juice-WRLD-Righteous-Official-Video-Juice-WRLD.mp3?rlkey=894costjcskui5340mwub1y4r&st=9il65ijt&dl=0" },
+  { title: "Lucid Dreams - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/2njd07vnel1dgvh7w0v3b/Juice-WRLD-Lucid-Dreams-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=wa0t8r8keto8yl7fi5p5kzpig&st=904vl9vh&dl=0" },
+  { title: "In My Head - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/u6q5uesxfe2giz4xqd3ks/Juice-WRLD-In-My-Head-JuiceWRLDVEVO.mp3?rlkey=1n1810rjtd3bl7oec6m3r1n6e&st=lkcxfoqm&dl=0" },
+  { title: "Bandit - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/vlzmac7mgkid9kqw26rvk/Juice-WRLD-Bandit-ft.-NBA-Youngboy-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=a9jhv76lumg76w3azbwbyiuoo&st=6zyadcd0&dl=0" },
+  { title: "BAND4BAND - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/ci450c4ixn9wsgaatyu9m/CENTRAL-CEE-FT.-LIL-BABY-BAND4BAND-MUSIC-VIDEO-Central-Cee.mp3?rlkey=65eznaq33u6iyczpldx32aop5&st=l1xb98h6&dl=0" },
+  { title: "Loading - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/h5wmu9t3dp0qb93udfbms/Central-Cee-Loading-Music-Video-GRM-Daily-GRM-Daily.mp3?rlkey=xrced3ku1csr7cjk8vpxear0b&st=9gdwg9p5&dl=0" },
+  { title: "Doja - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/o7iz1vm4q3q72f3eme9ej/Central-Cee-Doja-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=bzj382w23j70ommo1ir00pegm&st=5mqrhr49&dl=0" },
+  { title: "Sprinter - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/my4z2swzvq1y7wj4avphq/Central-Cee-x-Dave-Sprinter-Music-Video-Central-Cee.mp3?rlkey=1qzm1ucyyf4be7rmybwomnbz8&st=cs9y6z40&dl=0" },
+  { title: "6 for 6 - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/ofz4sn0w9tq8k85gj80m8/Central-Cee-6-For-6-Music-Video-Central-Cee.mp3?rlkey=kf4l50q2swa0c6fu5ygazv1x6&st=1v3xpaxr&dl=0" },
+  { title: "Timeless - The Weeknd", url: "https://dl.dropboxusercontent.com/scl/fi/fy8d05qvk47cwq8kmtw08/The-Weeknd-Playboi-Carti-Timeless-TheWeekndVEVO.mp3?rlkey=eubuxw2p42p32865b441bz073&st=3s178i81&dl=0" },
+  { title: "FE!N - Travis Scott", url: "https://dl.dropboxusercontent.com/scl/fi/c0nzo27lknmhn95mi8mmg/Travis-Scott-FE-N-ft.-Playboi-Carti-TravisScottVEVO.mp3?rlkey=xuh5mae5uqe1tu07jwk4k8b3i&st=ysx1968q&dl=0" },
+  { title: "Goosebumps - Travis Scott", url: "https://dl.dropboxusercontent.com/scl/fi/2rzd41ojxhdw7cn89dmy9/Travis-Scott-goosebumps-ft.-Kendrick-Lamar-TravisScottVEVO.mp3?rlkey=xyayelf0o7e97vxr2oy9md49f&st=7dqnhhzo&dl=0" },
+  { title: "Vamp Anthem - Playboi Carti", url: "https://dl.dropboxusercontent.com/scl/fi/apv86xblk0hjjhabq87k1/Playboi-Carti-Vamp-Anthem-Official-Audio-Playboi-Carti.mp3?rlkey=ukbkf24fvewutsmf3e04j6aue&st=mc6gsltw&dl=0" },
+  { title: "Walk - Comethazine", url: "https://dl.dropboxusercontent.com/scl/fi/sw2jn151icprnp9yknoro/Comethazine-Walk-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=ublf1mttzc5hh8ojplcvqrwme&st=g3vzjfn1&dl=0" },
+  { title: "Murder On My Mind - YNW Melly", url: "https://dl.dropboxusercontent.com/scl/fi/6o75o7ad2z9ivhmxf8zt9/YNW-Melly-Murder-On-My-Mind-Official-Video-YNW-Melly.mp3?rlkey=97e7gwygwanqrpovx60sn7jwm&st=06lfx9vg&dl=0" },
+  { title: "F*ck Love - XXXTENTACION", url: "https://dl.dropboxusercontent.com/scl/fi/zcjp3nu9ajbcwvbwo6fpo/Fck-love-XXXTENTACIONXXX-Ft.-Trippie-Redd-Xertix.mp3?rlkey=lsbk8a7ktgp4i3ixlh0som2rx&st=dw4zv7ce&dl=0" },
+  { title: "Revenge - XXXTENTACION", url: "https://dl.dropboxusercontent.com/scl/fi/4y2dwrp8wx0td3y4r8bhm/XXXTENTACION-Revenge-Audio-XXXTENTACION.mp3?rlkey=dx7v50c0r9atq78g7r2fpacz4&st=pwa79a5l&dl=0" },
+  { title: "The Grinch - Trippie Redd", url: "https://dl.dropboxusercontent.com/scl/fi/q73vvhrf9cdzwqikuudyk/Trippie-Redd-The-Grinch-TrippieReddVEVO.mp3?rlkey=9g54xbdvellxm9ptmoo7e5k3h&st=of07s0q6&dl=0" },
+  { title: "RAP - Lil Darkie", url: "https://dl.dropboxusercontent.com/scl/fi/vysepchd2959dwj5tnvqk/LIL-DARKIE-RAP-MUSIC-PROD.-WENDIGO-MUSIC-VIDEO-Spider-Gang.mp3?rlkey=gp95my9zkh9asqhax57mhk626&st=oac171n7&dl=0" },
+  { title: "HOLOCAUST - Lil Darkie", url: "https://dl.dropboxusercontent.com/scl/fi/qbne6dw8adoe27c8ia0lv/HOLOCAUST-Lil-Darkie.mp3?rlkey=qze2tkh5bf1lt3ejcy0ex32qj&st=h8be1tjv&dl=0" }
+];
+
 
     const songList = document.getElementById("songList");
     const audioElement = document.getElementById("audio");
