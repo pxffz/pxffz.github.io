@@ -44,16 +44,16 @@
       padding: 20px;
       width: 400px;
       box-shadow: 0 0 20px rgba(255,255,255,0.1);
+      z-index: 10;
     }
 
     .song-list {
       margin-bottom: 20px;
-      max-height: 300px; /* scrollable height */
+      max-height: 300px;
       overflow-y: auto;
       padding-right: 5px;
     }
 
-    /* Custom scrollbar */
     .song-list::-webkit-scrollbar {
       width: 6px;
     }
@@ -109,11 +109,7 @@
       width: 100%;
     }
 
-    .volume-control {
-      margin-top: 10px;
-    }
-
-    .bass-control {
+    .volume-control, .bass-control {
       margin-top: 10px;
     }
 
@@ -300,7 +296,7 @@
     };
 
     volume.oninput = () => {
-      gainNode.gain.value = volume.value * 3; // boost volume
+      gainNode.gain.value = volume.value * 3;
     };
 
     bass.oninput = () => {
@@ -324,7 +320,7 @@
       requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
-      ctx.fillStyle = "black"; // pure black background
+      ctx.fillStyle = "black";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -333,6 +329,8 @@
       for(let i = 0; i < bufferLength; i++) {
         const barHeight = dataArray[i];
         ctx.fillStyle = "white";
+        ctx.shadowColor = "white";
+        ctx.shadowBlur = 20;
         ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
         x += barWidth + 1;
       }
