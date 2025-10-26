@@ -14,15 +14,6 @@
       color: #fff;
     }
 
-    #visualizer {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-    }
-
     /* Firefly glow background */
     .firefly {
       position: absolute;
@@ -33,7 +24,6 @@
       height: 6px;
       animation: flicker 3s infinite ease-in-out alternate;
       filter: blur(3px);
-      z-index: 1;
     }
 
     @keyframes flicker {
@@ -54,16 +44,16 @@
       padding: 20px;
       width: 400px;
       box-shadow: 0 0 20px rgba(255,255,255,0.1);
-      z-index: 2;
     }
 
     .song-list {
       margin-bottom: 20px;
-      max-height: 300px;
+      max-height: 300px; /* scrollable height */
       overflow-y: auto;
       padding-right: 5px;
     }
 
+    /* Custom scrollbar */
     .song-list::-webkit-scrollbar {
       width: 6px;
     }
@@ -119,7 +109,11 @@
       width: 100%;
     }
 
-    .volume-control, .bass-control {
+    .volume-control {
+      margin-top: 10px;
+    }
+
+    .bass-control {
       margin-top: 10px;
     }
 
@@ -127,42 +121,58 @@
       text-align: center;
       margin-bottom: 10px;
     }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
   </style>
 </head>
 <body>
-  <canvas id="visualizer"></canvas>
-
   <!-- Fireflies -->
   <script>
     const numFireflies = 80;
     const fireflies = [];
+
     for (let i = 0; i < numFireflies; i++) {
       const f = document.createElement('div');
       f.classList.add('firefly');
       document.body.appendChild(f);
+
       f.style.left = Math.random() * window.innerWidth + 'px';
       f.style.top = Math.random() * window.innerHeight + 'px';
       f.dataset.dx = (Math.random() - 0.5) * 0.8;
       f.dataset.dy = (Math.random() - 0.5) * 0.8;
+
       fireflies.push(f);
     }
+
     function animateFireflies() {
       fireflies.forEach(f => {
         let x = parseFloat(f.style.left);
         let y = parseFloat(f.style.top);
         let dx = parseFloat(f.dataset.dx);
         let dy = parseFloat(f.dataset.dy);
+
         x += dx;
         y += dy;
+
         if (x < 0 || x > window.innerWidth) f.dataset.dx = -dx;
         if (y < 0 || y > window.innerHeight) f.dataset.dy = -dy;
+
         f.style.left = x + 'px';
         f.style.top = y + 'px';
       });
       requestAnimationFrame(animateFireflies);
     }
+
     animateFireflies();
   </script>
+
+  <!-- Canvas Visualizer -->
+  <canvas id="visualizer"></canvas>
 
   <!-- Music Player -->
   <div class="player-menu">
@@ -183,14 +193,13 @@
       Volume: <input type="range" id="volume" class="slider" min="0" max="1" step="0.01" value="0.5">
     </div>
     <div class="bass-control">
-      Bass: <input type="range" id="bass" class="slider" min="0" max="3" step="0.01" value="1">
+      Bass: <input type="range" id="bass" class="slider" min="0" max="5" step="0.1" value="1">
     </div>
   </div>
 
   <script>
     const songs = [
       { title: "Ransom - Lil Tecca", url: "https://dl.dropboxusercontent.com/scl/fi/luwd8s86vof4rvufmu4e7/Lil-Tecca-Ransom-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=8es0stu8bxfg8gvbw06zm6dqd&st=krsgjj8a&dl=0" },
-      { title: "500lbs - Lil Tecca", url: "https://dl.dropboxusercontent.com/scl/fi/4jyrdn710z8udk041367o/Lil-Tecca-500lbs-Official-Audio-Lil-Tecca.mp3?rlkey=vwl6mxphfbi1m82x6lwowzkjz&st=0hd251z6&dl=0" },
       { title: "TV OFF - Kendrick Lamar", url: "https://dl.dropboxusercontent.com/scl/fi/l0lxg4sii5k6y7916vala/Kendrick-Lamar-tv-off-Official-Audio-Kendrick-Lamar.mp3?rlkey=1yhv84lbb9z9w5ow2c00jtfr7&st=ocuyf8od&dl=0" },
       { title: "Not Like Us - Kendrick Lamar", url: "https://dl.dropboxusercontent.com/scl/fi/ydelvccjhl7kh6j8126n3/Kendrick-Lamar-Not-Like-Us-KendrickLamarVEVO.mp3?rlkey=8yg6uuql9o3uevsm3m6drobzh&st=k2619iz6&dl=0" },
       { title: "Robbery - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/bgmogl61w0fbbf3rlfqhi/Juice-WRLD-Robbery-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=4no8kslzlao743q0v1mih82hi&st=pleqk1nf&dl=0" },
@@ -230,28 +239,25 @@
     const repeat = document.getElementById("repeat");
     const progress = document.getElementById("progress");
     const volume = document.getElementById("volume");
-    const bassSlider = document.getElementById("bass");
+    const bass = document.getElementById("bass");
     const currentTitle = document.getElementById("currentTitle");
 
-    // Web Audio API
+    // Setup Web Audio API
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const track = audioCtx.createMediaElementSource(audioElement);
     const gainNode = audioCtx.createGain();
     const bassFilter = audioCtx.createBiquadFilter();
     bassFilter.type = "lowshelf";
     bassFilter.frequency.value = 200;
-    bassFilter.gain.value = 0;
+    bassFilter.gain.value = bass.value;
 
-    const analyser = audioCtx.createAnalyser();
-    track.connect(bassFilter).connect(gainNode).connect(analyser).connect(audioCtx.destination);
-    analyser.fftSize = 256;
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
+    track.connect(bassFilter).connect(gainNode).connect(audioCtx.destination);
 
     document.body.addEventListener("click", () => {
       if (audioCtx.state === "suspended") audioCtx.resume();
     }, { once: true });
 
+    // Song buttons
     songs.forEach((song, index) => {
       const btn = document.createElement("button");
       btn.textContent = song.title;
@@ -276,57 +282,62 @@
         playPause.textContent = "▶️";
       }
     };
+
     back5.onclick = () => { audioElement.currentTime -= 5; };
     forward5.onclick = () => { audioElement.currentTime += 5; };
+
     repeat.onclick = () => {
       audioElement.loop = !audioElement.loop;
       repeat.style.color = audioElement.loop ? "grey" : "white";
     };
+
     audioElement.ontimeupdate = () => {
       progress.value = (audioElement.currentTime / audioElement.duration) * 100 || 0;
     };
+
     progress.oninput = () => {
       audioElement.currentTime = (progress.value / 100) * audioElement.duration;
     };
-    volume.oninput = () => { gainNode.gain.value = volume.value * 3; };
-    bassSlider.oninput = () => { bassFilter.gain.value = (bassSlider.value - 1) * 10; };
 
-    // Glowy visualizer
+    volume.oninput = () => {
+      gainNode.gain.value = volume.value * 3; // boost volume
+    };
+
+    bass.oninput = () => {
+      bassFilter.gain.value = bass.value;
+    };
+
+    // Visualizer
     const canvas = document.getElementById("visualizer");
     const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    track.connect(analyser);
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
 
     function draw() {
       requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
-      // translucent background for fading effect
-      ctx.fillStyle = "rgba(0,0,0,0.1)";
+      ctx.fillStyle = "black"; // pure black background
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const barWidth = canvas.width / bufferLength;
-      for (let i = 0; i < bufferLength; i++) {
-        const barHeight = dataArray[i] * 1.5;
-        const x = i * barWidth;
-        const y = canvas.height - barHeight;
+      const barWidth = (canvas.width / bufferLength) * 2.5;
+      let x = 0;
 
-        // glowing bars
-        const gradient = ctx.createLinearGradient(x, y, x, canvas.height);
-        gradient.addColorStop(0, `rgba(255,255,255,0.9)`);
-        gradient.addColorStop(1, `rgba(255,255,255,0)`);
-
-        ctx.fillStyle = gradient;
-        ctx.shadowColor = "white";
-        ctx.shadowBlur = 10;
-        ctx.fillRect(x, y, barWidth * 0.7, barHeight);
+      for(let i = 0; i < bufferLength; i++) {
+        const barHeight = dataArray[i];
+        ctx.fillStyle = "white";
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+        x += barWidth + 1;
       }
     }
+
     draw();
   </script>
 </body>
