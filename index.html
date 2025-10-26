@@ -14,7 +14,6 @@
       color: #fff;
     }
 
-    /* Firefly glow background */
     .firefly {
       position: absolute;
       background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
@@ -32,7 +31,6 @@
       100% { opacity: 0.2; transform: scale(0.8); }
     }
 
-    /* Player menu */
     .player-menu {
       position: absolute;
       top: 50%;
@@ -127,7 +125,6 @@
   </style>
 </head>
 <body>
-  <!-- Fireflies -->
   <script>
     const numFireflies = 80;
     const fireflies = [];
@@ -167,10 +164,8 @@
     animateFireflies();
   </script>
 
-  <!-- Canvas Visualizer -->
   <canvas id="visualizer"></canvas>
 
-  <!-- Music Player -->
   <div class="player-menu">
     <div class="song-list" id="songList"></div>
 
@@ -189,7 +184,7 @@
       Volume: <input type="range" id="volume" class="slider" min="0" max="1" step="0.01" value="0.5">
     </div>
     <div class="bass-control">
-      Bass: <input type="range" id="bass" class="slider" min="0" max="5" step="0.1" value="1">
+      Bass: <input type="range" id="bass" class="slider" min="0" max="20" step="0.1" value="1">
     </div>
   </div>
 
@@ -238,7 +233,6 @@
     const bass = document.getElementById("bass");
     const currentTitle = document.getElementById("currentTitle");
 
-    // Setup Web Audio API
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const track = audioCtx.createMediaElementSource(audioElement);
     const gainNode = audioCtx.createGain();
@@ -253,7 +247,6 @@
       if (audioCtx.state === "suspended") audioCtx.resume();
     }, { once: true });
 
-    // Song buttons
     songs.forEach((song, index) => {
       const btn = document.createElement("button");
       btn.textContent = song.title;
@@ -300,10 +293,10 @@
     };
 
     bass.oninput = () => {
-      bassFilter.gain.value = bass.value;
+      // Scale the bass boost aggressively for max effect
+      bassFilter.gain.value = bass.value * 3;
     };
 
-    // Visualizer
     const canvas = document.getElementById("visualizer");
     const ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
@@ -330,7 +323,7 @@
         const barHeight = dataArray[i];
         ctx.fillStyle = "white";
         ctx.shadowColor = "white";
-        ctx.shadowBlur = 20;
+        ctx.shadowBlur = 30; // make glow stronger
         ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
         x += barWidth + 1;
       }
