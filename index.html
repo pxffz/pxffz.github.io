@@ -14,6 +14,15 @@
       color: #fff;
     }
 
+    #visualizer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
     /* Firefly glow background */
     .firefly {
       position: absolute;
@@ -24,6 +33,7 @@
       height: 6px;
       animation: flicker 3s infinite ease-in-out alternate;
       filter: blur(3px);
+      z-index: 1;
     }
 
     @keyframes flicker {
@@ -44,16 +54,16 @@
       padding: 20px;
       width: 400px;
       box-shadow: 0 0 20px rgba(255,255,255,0.1);
+      z-index: 2;
     }
 
     .song-list {
       margin-bottom: 20px;
-      max-height: 300px; /* scrollable height */
+      max-height: 300px;
       overflow-y: auto;
       padding-right: 5px;
     }
 
-    /* Custom scrollbar */
     .song-list::-webkit-scrollbar {
       width: 6px;
     }
@@ -109,7 +119,7 @@
       width: 100%;
     }
 
-    .volume-control {
+    .volume-control, .bass-control {
       margin-top: 10px;
     }
 
@@ -120,43 +130,37 @@
   </style>
 </head>
 <body>
+  <canvas id="visualizer"></canvas>
+
   <!-- Fireflies -->
   <script>
     const numFireflies = 80;
     const fireflies = [];
-
     for (let i = 0; i < numFireflies; i++) {
       const f = document.createElement('div');
       f.classList.add('firefly');
       document.body.appendChild(f);
-
       f.style.left = Math.random() * window.innerWidth + 'px';
       f.style.top = Math.random() * window.innerHeight + 'px';
       f.dataset.dx = (Math.random() - 0.5) * 0.8;
       f.dataset.dy = (Math.random() - 0.5) * 0.8;
-
       fireflies.push(f);
     }
-
     function animateFireflies() {
       fireflies.forEach(f => {
         let x = parseFloat(f.style.left);
         let y = parseFloat(f.style.top);
         let dx = parseFloat(f.dataset.dx);
         let dy = parseFloat(f.dataset.dy);
-
         x += dx;
         y += dy;
-
         if (x < 0 || x > window.innerWidth) f.dataset.dx = -dx;
         if (y < 0 || y > window.innerHeight) f.dataset.dy = -dy;
-
         f.style.left = x + 'px';
         f.style.top = y + 'px';
       });
       requestAnimationFrame(animateFireflies);
     }
-
     animateFireflies();
   </script>
 
@@ -177,6 +181,9 @@
     <input type="range" id="progress" class="slider" min="0" max="100" value="0">
     <div class="volume-control">
       Volume: <input type="range" id="volume" class="slider" min="0" max="1" step="0.01" value="0.5">
+    </div>
+    <div class="bass-control">
+      Bass: <input type="range" id="bass" class="slider" min="0" max="3" step="0.01" value="1">
     </div>
   </div>
 
@@ -223,19 +230,28 @@
     const repeat = document.getElementById("repeat");
     const progress = document.getElementById("progress");
     const volume = document.getElementById("volume");
+    const bassSlider = document.getElementById("bass");
     const currentTitle = document.getElementById("currentTitle");
 
-    // Setup Web Audio API for boosted volume
+    // Web Audio API
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const track = audioCtx.createMediaElementSource(audioElement);
     const gainNode = audioCtx.createGain();
-    track.connect(gainNode).connect(audioCtx.destination);
+    const bassFilter = audioCtx.createBiquadFilter();
+    bassFilter.type = "lowshelf";
+    bassFilter.frequency.value = 200;
+    bassFilter.gain.value = 0;
+
+    const analyser = audioCtx.createAnalyser();
+    track.connect(bassFilter).connect(gainNode).connect(analyser).connect(audioCtx.destination);
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
 
     document.body.addEventListener("click", () => {
       if (audioCtx.state === "suspended") audioCtx.resume();
     }, { once: true });
 
-    // Generate song buttons
     songs.forEach((song, index) => {
       const btn = document.createElement("button");
       btn.textContent = song.title;
@@ -260,27 +276,58 @@
         playPause.textContent = "▶️";
       }
     };
-
     back5.onclick = () => { audioElement.currentTime -= 5; };
     forward5.onclick = () => { audioElement.currentTime += 5; };
-
     repeat.onclick = () => {
       audioElement.loop = !audioElement.loop;
       repeat.style.color = audioElement.loop ? "grey" : "white";
     };
-
     audioElement.ontimeupdate = () => {
       progress.value = (audioElement.currentTime / audioElement.duration) * 100 || 0;
     };
-
     progress.oninput = () => {
       audioElement.currentTime = (progress.value / 100) * audioElement.duration;
     };
+    volume.oninput = () => { gainNode.gain.value = volume.value * 3; };
+    bassSlider.oninput = () => { bassFilter.gain.value = (bassSlider.value - 1) * 10; };
 
-    volume.oninput = () => {
-      // Volume slider now boosts up to 3x normal volume
-      gainNode.gain.value = volume.value * 3;
-    };
+    // Glowy visualizer
+    const canvas = document.getElementById("visualizer");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function draw() {
+      requestAnimationFrame(draw);
+      analyser.getByteFrequencyData(dataArray);
+
+      // translucent background for fading effect
+      ctx.fillStyle = "rgba(0,0,0,0.1)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = canvas.width / bufferLength;
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = dataArray[i] * 1.5;
+        const x = i * barWidth;
+        const y = canvas.height - barHeight;
+
+        // glowing bars
+        const gradient = ctx.createLinearGradient(x, y, x, canvas.height);
+        gradient.addColorStop(0, `rgba(255,255,255,0.9)`);
+        gradient.addColorStop(1, `rgba(255,255,255,0)`);
+
+        ctx.fillStyle = gradient;
+        ctx.shadowColor = "white";
+        ctx.shadowBlur = 10;
+        ctx.fillRect(x, y, barWidth * 0.7, barHeight);
+      }
+    }
+    draw();
   </script>
 </body>
 </html>
