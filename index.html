@@ -1,8 +1,3 @@
-<!--
-Oh I See... Your Trying To Steal The HTML Hey? Well The HTML Is Open Source Skidders. Now What Are You Trying To Do? Skidding The Code? Oh I See You Fuck Face. You Came Here To Just Steal The Code! You Know I Put All My Fucking Work In This HTML? Just Typing Alot Making A Bunch Of HTMLs In The Future But You Kind Of People Sucks For Real. You Niggas Dumb As Fuck Trying To Steal HTMLs...
-CREDITS TO vy_rt ON DISCORD! dm me for suggestions!
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +14,6 @@ CREDITS TO vy_rt ON DISCORD! dm me for suggestions!
       color: #fff;
     }
 
-    /* Firefly glow background */
     .firefly {
       position: absolute;
       background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
@@ -37,7 +31,6 @@ CREDITS TO vy_rt ON DISCORD! dm me for suggestions!
       100% { opacity: 0.2; transform: scale(0.8); }
     }
 
-    /* Player menu */
     .player-menu {
       position: absolute;
       top: 50%;
@@ -129,53 +122,37 @@ CREDITS TO vy_rt ON DISCORD! dm me for suggestions!
       left: 0;
       z-index: 0;
     }
+
+    /* Add Music Button */
+    .add-music-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 20;
+    }
+
+    .add-music-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 20px white;
+    }
   </style>
 </head>
 <body>
-  <!-- Fireflies -->
-  <script>
-    const numFireflies = 80;
-    const fireflies = [];
 
-    for (let i = 0; i < numFireflies; i++) {
-      const f = document.createElement('div');
-      f.classList.add('firefly');
-      document.body.appendChild(f);
+  <button class="add-music-btn" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfNRXVTxCmd86bqSul31uW36coln96SvR23hHWLx665XFuC4Q/viewform?usp=sharing&ouid=110076343776724203786', '_blank')">
+    ADD MUSIC
+  </button>
 
-      f.style.left = Math.random() * window.innerWidth + 'px';
-      f.style.top = Math.random() * window.innerHeight + 'px';
-      f.dataset.dx = (Math.random() - 0.5) * 0.8;
-      f.dataset.dy = (Math.random() - 0.5) * 0.8;
-
-      fireflies.push(f);
-    }
-
-    function animateFireflies() {
-      fireflies.forEach(f => {
-        let x = parseFloat(f.style.left);
-        let y = parseFloat(f.style.top);
-        let dx = parseFloat(f.dataset.dx);
-        let dy = parseFloat(f.dataset.dy);
-
-        x += dx;
-        y += dy;
-
-        if (x < 0 || x > window.innerWidth) f.dataset.dx = -dx;
-        if (y < 0 || y > window.innerHeight) f.dataset.dy = -dy;
-
-        f.style.left = x + 'px';
-        f.style.top = y + 'px';
-      });
-      requestAnimationFrame(animateFireflies);
-    }
-
-    animateFireflies();
-  </script>
-
-  <!-- Canvas Visualizer -->
   <canvas id="visualizer"></canvas>
 
-  <!-- Music Player -->
   <div class="player-menu">
     <div class="song-list" id="songList"></div>
 
@@ -243,7 +220,6 @@ CREDITS TO vy_rt ON DISCORD! dm me for suggestions!
     const bass = document.getElementById("bass");
     const currentTitle = document.getElementById("currentTitle");
 
-    // Setup Web Audio API
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const track = audioCtx.createMediaElementSource(audioElement);
     const gainNode = audioCtx.createGain();
@@ -258,7 +234,6 @@ CREDITS TO vy_rt ON DISCORD! dm me for suggestions!
       if (audioCtx.state === "suspended") audioCtx.resume();
     }, { once: true });
 
-    // Song buttons
     songs.forEach((song, index) => {
       const btn = document.createElement("button");
       btn.textContent = song.title;
@@ -308,7 +283,6 @@ CREDITS TO vy_rt ON DISCORD! dm me for suggestions!
       bassFilter.gain.value = bass.value;
     };
 
-    // Visualizer
     const canvas = document.getElementById("visualizer");
     const ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
@@ -325,8 +299,7 @@ CREDITS TO vy_rt ON DISCORD! dm me for suggestions!
       requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
-      ctx.fillStyle = "black";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const barWidth = (canvas.width / bufferLength) * 2.5;
       let x = 0;
@@ -346,6 +319,3 @@ CREDITS TO vy_rt ON DISCORD! dm me for suggestions!
 </body>
 </html>
 
-<!--
-CREATED BY vy_rt ON DISCORD - keep this here you dumb fucking nigga
--->
