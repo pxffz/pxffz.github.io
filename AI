@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tough & Cool AI</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    background: #111;
+    color: #0ff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    padding: 20px;
+  }
+
+  h1 {
+    color: #f00;
+    margin-bottom: 20px;
+  }
+
+  #chatbox, #imagebox {
+    width: 90%;
+    max-width: 600px;
+    background: #222;
+    border: 2px solid #0ff;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    overflow-y: auto;
+    max-height: 300px;
+  }
+
+  .message {
+    margin: 10px 0;
+  }
+
+  .user {
+    color: #ff0;
+  }
+
+  .ai {
+    color: #0ff;
+  }
+
+  input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    margin-right: 10px;
+  }
+
+  button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    background: #f00;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #c00;
+  }
+
+  #imagebox img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+<h1>Tough & Cool AI</h1>
+
+<div id="chatbox"></div>
+<input type="text" id="userInput" placeholder="Type something...">
+<button onclick="sendMessage()">Send</button>
+
+<div id="imagebox"></div>
+<input type="text" id="imageInput" placeholder="Image prompt...">
+<button onclick="generateImage()">Generate Image</button>
+
+<script>
+const chatbox = document.getElementById('chatbox');
+const imagebox = document.getElementById('imagebox');
+
+function toughResponses(text) {
+    const responses = [
+        "Listen up, rookie. That's not how it's done.",
+        "I don’t got time for weak talk. Step it up.",
+        "Cool moves, but I’ve seen better.",
+        "You better be ready, because I don’t play.",
+        "Hah, that’s cute. Try harder next time.",
+        "I run this show. Stay in line.",
+        "You got guts, kid. Keep it coming."
+    ];
+    // Random response
+    return responses[Math.floor(Math.random() * responses.length)];
+}
+
+function sendMessage() {
+    const input = document.getElementById('userInput');
+    if(input.value.trim() === "") return;
+
+    // Show user message
+    const userMsg = document.createElement('div');
+    userMsg.classList.add('message', 'user');
+    userMsg.textContent = "You: " + input.value;
+    chatbox.appendChild(userMsg);
+
+    // Show AI response
+    const aiMsg = document.createElement('div');
+    aiMsg.classList.add('message', 'ai');
+    aiMsg.textContent = "AI: " + toughResponses(input.value);
+    chatbox.appendChild(aiMsg);
+
+    chatbox.scrollTop = chatbox.scrollHeight;
+    input.value = "";
+}
+
+// Simulated image generator
+function generateImage() {
+    const prompt = document.getElementById('imageInput').value;
+    if(prompt.trim() === "") return;
+
+    const img = document.createElement('img');
+    img.src = "https://via.placeholder.com/400x200.png?text=" + encodeURIComponent(prompt);
+    imagebox.appendChild(img);
+
+    document.getElementById('imageInput').value = "";
+}
+</script>
+</body>
+</html>
