@@ -79,12 +79,6 @@ body{min-height:100vh;font-family:'Press Start 2P',cursive;color:#fff;background
 
 </div>
 
-    <form id="uv-form" class="search-form">
-      <input id="uv-search-engine" value="https://duckduckgo.com/&q=%s" type="hidden"/> 
-      <input id="uv-address" type="text" placeholder="Search DuckDuckGo or type a URL" class="search-input"/>
-    </form>
-</div>
-
 <a href="https://discord.gg/YpxnycpwDW" class="discord-btn" target="_blank"><i class="fab fa-discord"></i> Join Our Discord</a>
 
 <script>
@@ -118,7 +112,11 @@ function typeWriter(){const msg=messages[messageIndex];if(isDeleting){typingElem
 typeWriter();
 
 /* Search */
-
+    <form id="uv-form" class="search-form">
+      <input id="uv-search-engine" value="https://duckduckgo.com/&q=%s" type="hidden"/> 
+      <input id="uv-address" type="text" placeholder="Search DuckDuckGo or type a URL" class="search-input"/>
+    </form>
+</div>
 
 /* Battery */
 function updateBattery(){if('getBattery' in navigator){navigator.getBattery().then(battery=>{function updateAll(){const level=Math.floor(battery.level*100);document.getElementById('battery-percent').textContent=`${level}%`;document.getElementById('battery-level').style.width=`${level}%`;const batteryOval=document.getElementById('battery-oval');if(battery.charging){batteryOval.classList.add('charging');document.getElementById('battery-level').style.background='linear-gradient(to right,#00ffaa,#00cc88)';}else{batteryOval.classList.remove('charging');if(level<=20)document.getElementById('battery-level').style.background='linear-gradient(to right,#ff5555,#ff0000)';else if(level<=50)document.getElementById('battery-level').style.background='linear-gradient(to right,#ffaa00,#ffcc00)';else document.getElementById('battery-level').style.background='linear-gradient(to right,#00ffaa,#00cc88)';}}updateAll();battery.addEventListener('levelchange',updateAll);battery.addEventListener('chargingchange',updateAll);});}else document.getElementById('battery-container').style.display='none';}
