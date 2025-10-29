@@ -1,392 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Google</title>
-<link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/2048px-Google_%22G%22_logo.svg.png" type="image/png">
-<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&family=Epunda+Slab:wght@700&display=swap" rel="stylesheet">
-<style>
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #000;
-    color: #fff;
-    font-family: 'Lato', sans-serif;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VYRT MUSIC 💫</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      height: 100vh;
+      font-family: "Poppins", sans-serif;
+      color: #fff;
+    }
 
-.menu {
-    width: calc(100% - 20px);
-    height: 60px;
-    background: rgba(128,128,128,0.3);
-    backdrop-filter: blur(5px);
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0 20px;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.2);
-    z-index: 100;
-    box-sizing: border-box;
-}
+    .firefly {
+      position: absolute;
+      background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+      opacity: 0.8;
+      width: 6px;
+      height: 6px;
+      animation: flicker 3s infinite ease-in-out alternate;
+      filter: blur(3px);
+    }
 
-.menu a {
-    color: #fff;
-    text-decoration: none;
-    margin-right: 30px;
-    font-weight: 700;
-    transition: color 0.2s;
-    cursor: pointer;
-}
+    @keyframes flicker {
+      0% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.2; transform: scale(0.8); }
+    }
 
-.menu a:hover { color: #ccc; }
+    .player-menu {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(100, 100, 100, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      width: 400px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+      z-index: 10;
+    }
 
-.content {
-    padding-top: 100px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    text-align: center;
-    max-width: 900px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
-    flex: 1;
-    padding-bottom: 100px;
-}
+    .song-list {
+      margin-bottom: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
 
-.welcome-text {
-    font-family: 'Epunda Slab', serif;
-    font-weight: 700;
-    font-size: 72px;
-    color: #fff;
-    margin-bottom: 20px;
-    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
-}
+    .song-list::-webkit-scrollbar {
+      width: 6px;
+    }
 
-.description {
-    font-family: 'Epunda Slab', serif;
-    font-style: italic;
-    font-size: 18px;
-    color: #fff;
-    line-height: 1.6;
-    margin-bottom: 40px;
-}
+    .song-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 3px;
+    }
 
-.footer {
-    font-family: 'Epunda Slab', serif;
-    font-size: 16px;
-    color: #fff;
-    text-align: center;
-    padding: 20px;
-    border-top: 1px solid rgba(255,255,255,0.2);
-}
+    .song-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.6);
+    }
 
-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-}
+    .song-button {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.2s;
+    }
 
-.page { display: none; flex-direction: column; justify-content: flex-start; align-items: center; text-align: center; flex: 1; }
-.active { display: flex; }
+    .song-button:hover {
+      background: rgba(255,255,255,0.2);
+    }
 
-/* Games page grid fixed to 5 buttons per row */
-.game-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 24px;
-    width: 100%;
-    justify-items: center;
-}
+    .controls {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 10px 0;
+    }
 
-.game-button {
-    background-color: #222;
-    border: 1px solid #fff;
-    border-radius: 10px;
-    padding: 10px;
-    width: 100%;
-    max-width: 150px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
+    .controls button {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
 
-.game-button img {
-    width: 100%;
-    border-radius: 10px;
-    margin-bottom: 5px;
-}
+    .controls button:hover {
+      background: rgba(255,255,255,0.3);
+    }
 
-.game-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px #fff, 0 0 40px #fff, 0 0 60px #fff;
-}
+    .slider {
+      width: 100%;
+    }
 
-@media (max-width: 1000px) {
-    .game-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 600px) {
-    .game-grid { grid-template-columns: repeat(2, 1fr); }
-    .welcome-text { font-size: 48px; }
-    .description { font-size: 16px; padding: 0 10px; }
-}
+    .volume-control, .bass-control {
+      margin-top: 10px;
+    }
 
-.search-form {
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 65%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-}
+    h3 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
 
-.search-input {
-    flex: 1;
-    padding: 12px 18px;
-    font-size: 16px;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-radius: 30px;
-    outline: none;
-    background: rgba(34,34,34,0.9);
-    color: #fff;
-    box-shadow: 0 0 10px rgba(255,255,255,0.1);
-    transition: all 0.3s ease;
-}
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
 
-.search-input:focus {
-    border-color: #fff;
-    box-shadow: 0 0 15px #fff, 0 0 30px #fff;
-}
-</style>
+    /* Add Music Button */
+    .add-music-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 20;
+    }
+
+    .add-music-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 20px white;
+    }
+  </style>
 </head>
 <body>
-<canvas id="particles"></canvas>
 
-<div class="menu">
-    <a id="homeLink">Home</a>
-    <a id="gamesLink">G4m3s</a>
-    <a id="proxiesLink">Pr0x1es</a>
-</div>
+  <button class="add-music-btn" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfNRXVTxCmd86bqSul31uW36coln96SvR23hHWLx665XFuC4Q/viewform?usp=sharing&ouid=110076343776724203786', '_blank')">
+    ADD MUSIC
+  </button>
 
-<!-- Home Page -->
-<div id="homePage" class="content page active">
-    <div class="welcome-text">Welcome To Aerus</div>
-    <div class="description">
-        This Website Is Full Of Stuff I Wont Say Because This Website Would Be Blocked By Securly,
-        Lightspeed, ETC. So If Your New, Please Enjoy Yourself By Searching What You Wanna Do On The Menu.
+  <canvas id="visualizer"></canvas>
+
+  <div class="player-menu">
+    <div class="song-list" id="songList"></div>
+
+    <h3 id="currentTitle">No song selected</h3>
+    <audio id="audio" crossorigin="anonymous"></audio>
+
+    <div class="controls">
+      <button id="back5">⏪ -5s</button>
+      <button id="playPause">▶️</button>
+      <button id="forward5">⏩ +5s</button>
+      <button id="repeat">🔁</button>
     </div>
 
-    <form id="uv-form" class="search-form">
-      <input id="uv-search-engine" value="https://duckduckgo.com/&q=%s" type="hidden"/> 
-      <input id="uv-address" type="text" placeholder="Search DuckDuckGo or type a URL" class="search-input"/>
-    </form>
-</div>
-
-<!-- Games Page -->
-<div id="gamesPage" class="content page">
-    <div class="welcome-text">G4m3s</div>
-    <div class="description">In Here We Got G4m3s If You Know What We Mean! (WARNING: GAMES DONT SAVE DATA!)</div>
-    
-    <div class="game-grid">
-        <!-- Existing + new games -->
-        <div class="game-button" id="crazyCarsBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/331.png" alt="Crazy Cars"><div>Crazy Cars</div></div>
-        <div class="game-button" id="lolBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/58.png" alt="1v1.lol"><div>1v1.lol</div></div>
-        <div class="game-button" id="aswcBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/435.png" alt="A Small World Cup"><div>A Small World Cup</div></div>
-        <div class="game-button" id="angryBirdsBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/63.png" alt="Angry Birds"><div>Angry Birds</div></div>
-        <div class="game-button" id="bouncemastersBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/437.png" alt="Bouncemasters"><div>Bouncemasters</div></div>
-        
-        <div class="game-button" id="candyCrushBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/171.png" alt="Candy Crush"><div>Candy Crush</div></div>
-        <div class="game-button" id="drawJoustBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/387.png" alt="Draw Joust"><div>Draw Joust</div></div>
-        <div class="game-button" id="driveMadBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/35.png" alt="Drive Mad"><div>Drive Mad</div></div>
-        <div class="game-button" id="rainbowObbyBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/307.png" alt="Rainbow Obby"><div>Rainbow Obby</div></div>
-        <div class="game-button" id="bloodMoneyBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/454.png" alt="BLOODMONEY!"><div>BLOODMONEY!</div></div>
-
-        <div class="game-button" id="mc1122Btn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/182.png" alt="Minecraft 1.12.2"><div>Minecraft 1.12.2</div></div>
-        <div class="game-button" id="moneyRushBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/400.png" alt="Money Rush"><div>Money Rush</div></div>
-        <div class="game-button" id="mx3m2Btn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/97.png" alt="Motor X3M 2"><div>Motor X3M 2</div></div>
-        <div class="game-button" id="mx3m3Btn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/98.png" alt="Motor X3M 3"><div>Motor X3M 3</div></div>
-        <div class="game-button" id="mx3mppBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/124.png" alt="Motor X3M Pool Party"><div>Motor X3M Pool Party</div></div>
-
-        <div class="game-button" id="mx3msBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/99.png" alt="Motor X3M Spooky"><div>Motor X3M Spooky</div></div>
-        <div class="game-button" id="pvzBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/232.png" alt="Plants vs Zombies"><div>Plants vs Zombies</div></div>
-        <div class="game-button" id="run3Btn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/177.png" alt="Run 3"><div>Run 3</div></div>
-        <div class="game-button" id="ragdollArchersBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/186.png" alt="Ragdoll Archers"><div>Ragdoll Archers</div></div>
-        <div class="game-button" id="fnafBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/38.png" alt="FNAF"><div>FNAF</div></div>
-
-        <div class="game-button" id="fnaf2Btn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/39.png" alt="FNAF 2"><div>FNAF 2</div></div>
-        <div class="game-button" id="fnaf3Btn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/40.png" alt="FNAF 3"><div>FNAF 3</div></div>
-        <div class="game-button" id="fnaf4Btn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/41.png" alt="FNAF 4"><div>FNAF 4</div></div>
-        <div class="game-button" id="fnaf4hlwnBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/428.png" alt="FNAF 4 Halloween"><div>FNAF 4 Halloween</div></div>
-        <div class="game-button" id="gdlBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/27.png" alt="Geometry Dash Lite"><div>Geometry Dash Lite</div></div>
-
-        <div class="game-button" id="gbBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/257.png" alt="Google Baseball"><div>Google Baseball</div></div>
-        <div class="game-button" id="tr2Btn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/10.png" alt="Temple Run 2"><div>Temple Run 2</div></div>
-        <div class="game-button" id="tfBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/108.png" alt="Tiny Fishing"><div>Tiny Fishing</div></div>
-        <div class="game-button" id="ts3sBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/201.png" alt="Time Shooter 3 SWAT"><div>Time Shooter 3 SWAT</div></div>
-        <div class="game-button" id="undertaleBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/184.png" alt="Undertale"><div>Undertale</div></div>
-        <div class="game-button" id="shBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/11.png" alt="Stickman Hook"><div>Stickman Hook</div></div>
-        <div class="game-button" id="brBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/66.png" alt="Basketball Random"><div>Basketball Random</div></div>
-        <div class="game-button" id="bbBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/6.png" alt="Block Blast"><div>Block Blast</div></div>
-        <div class="game-button" id="bridgerBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/14.png" alt="Bridge Race"><div>Bridge Race</div></div>
-        <div class="game-button" id="borBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/77.png" alt="Boxing Random"><div>Boxing Random</div></div>
-        <div class="game-button" id="cookiecBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/82.png" alt="Cookie Clicker"><div>Cookie Clicker</div></div>
-        <div class="game-button" id="badpBtn"><img src="https://images.sftcdn.net/images/t_app-icon-m/p/ee008054-96d6-11e6-9072-00163ed833e7/2283125323/bad-piggies-logo.png" alt="Bad Piggies"><div>Bad Piggies</div></div>
-        <div class="game-button" id="fmBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/392.png" alt="Flip Master"><div>Flip Master</div></div>
-        <div class="game-button" id="fnBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/261.png" alt="Fruit Ninja"><div>Fruit Ninja</div></div>
-        <div class="game-button" id="gn1Btn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/90.png" alt="Granny"><div>Granny</div></div>
-        <div class="game-button" id="gn2Btn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/125.png" alt="Granny 2"><div>Granny 2</div></div>
-        <div class="game-button" id="gsBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/91.png" alt="Gunspin"><div>Gunspin</div></div>
-        <div class="game-button" id="hhBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/422.png" alt="High Heels"><div>High Heels</div></div>
-        <div class="game-button" id="jjBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/7.png" alt="Jetpack Joyride"><div>Jetpack Joyride</div></div>
-        <div class="game-button" id="rbBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/33.png" alt="Retro Ball"><div>Retro Bowl</div></div>
-        <div class="game-button" id="rbcBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/34.png" alt="Retro Ball College"><div>Retro Bowl College</div></div>
-        <div class="game-button" id="srBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/369.png" alt="Slowroads"><div>Slowroads</div></div>
-        <div class="game-button" id="sr3dBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/119.png" alt="Snow Rider 3D"><div>Snow Rider 3D</div></div>
-        <div class="game-button" id="ssmaBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/118.png" alt="Solar Smash"><div>Solar Smash</div></div> 
-        <div class="game-button" id="sprBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/9.png" alt="Sprunki"><div>Sprunki</div></div>
-        <div class="game-button" id="ssbBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/131.png" alt="Subway Surfers: Barcelona"><div>Subway Surfers: Barcelona</div></div>
-        <div class="game-button" id="tr3dBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/414.png" alt="Twerk Race 3D"><div>Twerk Race 3D</div></div>
-        <div class="game-button" id="sioBtn"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/461.png" alt="Slither.IO"><div>Slither.IO</div></div>
+    <input type="range" id="progress" class="slider" min="0" max="100" value="0">
+    <div class="volume-control">
+      Volume: <input type="range" id="volume" class="slider" min="0" max="1" step="0.01" value="0.5">
     </div>
-</div>
-
-<!-- Pr0x1es Page -->
-<div id="proxiesPage" class="content page">
-    <div class="welcome-text">Pr0x1es</div>
-    <div class="description">Pr0x1es Here If You Know What We Mean!</div>
-    <div class="game-grid">
-        <div class="game-button" id="pizzaBtn"><img src="https://c9qc3x2rttch.awesine.com/images/pizzalogo.png" alt="Pizza Edition"><div>Pizza Edition</div></div>
+    <div class="bass-control">
+      Bass: <input type="range" id="bass" class="slider" min="0" max="5" step="0.1" value="1">
     </div>
-</div>
+  </div>
 
-<div class="footer">Owned By DX.ZY</div>
+  <script>
+    const songs = [
+      { title: "Ransom - Lil Tecca", url: "https://dl.dropboxusercontent.com/scl/fi/luwd8s86vof4rvufmu4e7/Lil-Tecca-Ransom-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=8es0stu8bxfg8gvbw06zm6dqd&st=krsgjj8a&dl=0" },
+      { title: "TV OFF - Kendrick Lamar", url: "https://dl.dropboxusercontent.com/scl/fi/l0lxg4sii5k6y7916vala/Kendrick-Lamar-tv-off-Official-Audio-Kendrick-Lamar.mp3?rlkey=1yhv84lbb9z9w5ow2c00jtfr7&st=ocuyf8od&dl=0" },
+      { title: "Not Like Us - Kendrick Lamar", url: "https://dl.dropboxusercontent.com/scl/fi/ydelvccjhl7kh6j8126n3/Kendrick-Lamar-Not-Like-Us-KendrickLamarVEVO.mp3?rlkey=8yg6uuql9o3uevsm3m6drobzh&st=k2619iz6&dl=0" },
+      { title: "Robbery - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/bgmogl61w0fbbf3rlfqhi/Juice-WRLD-Robbery-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=4no8kslzlao743q0v1mih82hi&st=pleqk1nf&dl=0" },
+      { title: "Righteous - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/6jsrxfuwlf6nw1izq33qn/Juice-WRLD-Righteous-Official-Video-Juice-WRLD.mp3?rlkey=894costjcskui5340mwub1y4r&st=9il65ijt&dl=0" },
+      { title: "Lucid Dreams - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/2njd07vnel1dgvh7w0v3b/Juice-WRLD-Lucid-Dreams-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=wa0t8r8keto8yl7fi5p5kzpig&st=904vl9vh&dl=0" },
+      { title: "In My Head - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/u6q5uesxfe2giz4xqd3ks/Juice-WRLD-In-My-Head-JuiceWRLDVEVO.mp3?rlkey=1n1810rjtd3bl7oec6m3r1n6e&st=lkcxfoqm&dl=0" },
+      { title: "Bandit - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/vlzmac7mgkid9kqw26rvk/Juice-WRLD-Bandit-ft.-NBA-Youngboy-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=a9jhv76lumg76w3azbwbyiuoo&st=6zyadcd0&dl=0" },
+      { title: "BAND4BAND - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/ci450c4ixn9wsgaatyu9m/CENTRAL-CEE-FT.-LIL-BABY-BAND4BAND-MUSIC-VIDEO-Central-Cee.mp3?rlkey=65eznaq33u6iyczpldx32aop5&st=l1xb98h6&dl=0" },
+      { title: "Loading - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/h5wmu9t3dp0qb93udfbms/Central-Cee-Loading-Music-Video-GRM-Daily-GRM-Daily.mp3?rlkey=xrced3ku1csr7cjk8vpxear0b&st=9gdwg9p5&dl=0" },
+      { title: "Doja - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/o7iz1vm4q3q72f3eme9ej/Central-Cee-Doja-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=bzj382w23j70ommo1ir00pegm&st=5mqrhr49&dl=0" },
+      { title: "Sprinter - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/my4z2swzvq1y7wj4avphq/Central-Cee-x-Dave-Sprinter-Music-Video-Central-Cee.mp3?rlkey=1qzm1ucyyf4be7rmybwomnbz8&st=cs9y6z40&dl=0" },
+      { title: "6 for 6 - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/ofz4sn0w9tq8k85gj80m8/Central-Cee-6-For-6-Music-Video-Central-Cee.mp3?rlkey=kf4l50q2swa0c6fu5ygazv1x6&st=1v3xpaxr&dl=0" },
+      { title: "Timeless - The Weeknd", url: "https://dl.dropboxusercontent.com/scl/fi/fy8d05qvk47cwq8kmtw08/The-Weeknd-Playboi-Carti-Timeless-TheWeekndVEVO.mp3?rlkey=eubuxw2p42p32865b441bz073&st=3s178i81&dl=0" },
+      { title: "FE!N - Travis Scott", url: "https://dl.dropboxusercontent.com/scl/fi/c0nzo27lknmhn95mi8mmg/Travis-Scott-FE-N-ft.-Playboi-Carti-TravisScottVEVO.mp3?rlkey=xuh5mae5uqe1tu07jwk4k8b3i&st=ysx1968q&dl=0" },
+      { title: "Goosebumps - Travis Scott", url: "https://dl.dropboxusercontent.com/scl/fi/2rzd41ojxhdw7cn89dmy9/Travis-Scott-goosebumps-ft.-Kendrick-Lamar-TravisScottVEVO.mp3?rlkey=xyayelf0o7e97vxr2oy9md49f&st=7dqnhhzo&dl=0" },
+      { title: "Vamp Anthem - Playboi Carti", url: "https://dl.dropboxusercontent.com/scl/fi/apv86xblk0hjjhabq87k1/Playboi-Carti-Vamp-Anthem-Official-Audio-Playboi-Carti.mp3?rlkey=ukbkf24fvewutsmf3e04j6aue&st=mc6gsltw&dl=0" },
+      { title: "Walk - Comethazine", url: "https://dl.dropboxusercontent.com/scl/fi/sw2jn151icprnp9yknoro/Comethazine-Walk-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=ublf1mttzc5hh8ojplcvqrwme&st=g3vzjfn1&dl=0" },
+      { title: "Murder On My Mind - YNW Melly", url: "https://dl.dropboxusercontent.com/scl/fi/6o75o7ad2z9ivhmxf8zt9/YNW-Melly-Murder-On-My-Mind-Official-Video-YNW-Melly.mp3?rlkey=97e7gwygwanqrpovx60sn7jwm&st=06lfx9vg&dl=0" },
+      { title: "F*ck Love - XXXTENTACION", url: "https://dl.dropboxusercontent.com/scl/fi/zcjp3nu9ajbcwvbwo6fpo/Fck-love-XXXTENTACIONXXX-Ft.-Trippie-Redd-Xertix.mp3?rlkey=lsbk8a7ktgp4i3ixlh0som2rx&st=dw4zv7ce&dl=0" },
+      { title: "Revenge - XXXTENTACION", url: "https://dl.dropboxusercontent.com/scl/fi/4y2dwrp8wx0td3y4r8bhm/XXXTENTACION-Revenge-Audio-XXXTENTACION.mp3?rlkey=dx7v50c0r9atq78g7r2fpacz4&st=pwa79a5l&dl=0" },
+      { title: "The Grinch - Trippie Redd", url: "https://dl.dropboxusercontent.com/scl/fi/q73vvhrf9cdzwqikuudyk/Trippie-Redd-The-Grinch-TrippieReddVEVO.mp3?rlkey=9g54xbdvellxm9ptmoo7e5k3h&st=of07s0q6&dl=0" },
+      { title: "RAP - Lil Darkie", url: "https://dl.dropboxusercontent.com/scl/fi/vysepchd2959dwj5tnvqk/LIL-DARKIE-RAP-MUSIC-PROD.-WENDIGO-MUSIC-VIDEO-Spider-Gang.mp3?rlkey=gp95my9zkh9asqhax57mhk626&st=oac171n7&dl=0" },
+      { title: "HOLOCAUST - Lil Darkie", url: "https://dl.dropboxusercontent.com/scl/fi/qbne6dw8adoe27c8ia0lv/HOLOCAUST-Lil-Darkie.mp3?rlkey=qze2tkh5bf1lt3ejcy0ex32qj&st=h8be1tjv&dl=0" },
+      { title: "DIA DELICIA - NAKAMA", url: "https://dl.dropboxusercontent.com/scl/fi/5aht6qsueftkq4m5wm83v/DIA-DEL-CIA-NAKAMA-Official-Music-Video-Nakama.mp3?rlkey=5bu3n8bx4e739oiq3wx3gf7gq&st=5cx3hl5g&dl=0" },
+      { title: "DNA - LXNGVX", url: "https://dl.dropboxusercontent.com/scl/fi/z4ultxbe3t3q1s8varfgn/DNA-LXNGVX.mp3?rlkey=66xb2qghn76fwyj8eopk1agei&st=t4qg3jnr&dl=0" },
+      { title: "FUNK DO BOUNCE - Ariis", url: "https://dl.dropbox.com/scl/fi/9erszjoryr6oukfp78bdk/Ariis-FUNK-DO-BOUNCE-Brazilian-Funk-TheGoodVibe.mp3?rlkey=zx8s991szkpn5s4eufqfjdk22&st=ou2xr3hk&dl=0" },
+      { title: "Its Just Tradition (GAY ASS SONG😨) - BiscuitBeatsAI", url: "https://dl.dropbox.com/scl/fi/54rhh6x0lulleidncue99/It-s-Just-Tradition-Official-Lyric-Video-Biscuit-Beats.mp3?rlkey=ke19xj6elfl5hm3f1g1y2d3d2&st=x24vxp2b&dl=0" },
+      { title: "PSA - Kay Flock", url: "https://dl.dropbox.com/scl/fi/zlsedh06t4uls6rhmeg0d/Kay-Flock-PSA-Official-Video-Kay-Flock.mp3?rlkey=wd9hs6zylq955xvcv6vsvoqoa&st=ccf8gjft&dl=0" },
+      { title: "SOL VIBRA - DJ ZAREK", url: "https://dl.dropboxusercontent.com/scl/fi/yhld02nhkv67ybatemdzy/SOL-VIBRA-Slowed-DJ-Zarek.mp3?rlkey=sy5qtggjtiu0o52bq9an5qufc&st=oyp1xz00&dl=0" },
+      { title: "HEADSHOT 223 / GAS IN THE TRUCK - ISHOWSPEED", url: "https://dl.dropboxusercontent.com/scl/fi/enhemvj0xzofug4rtzuw5/IShowSpeed-Headshot-_-Gas-in-the-Truck-Official-Music-Video-IShowSpeed.mp3?rlkey=hcnxaiysk1uv3z6553x0w96an&st=iu59pfw2&dl=0" },
+      { title: "Doot Doot (67) - Skrilla", url: "https://dl.dropboxusercontent.com/scl/fi/v6fb2samn07dujwvowh9n/Skrilla-Doot-Doot-6-7-Official-Music-Video-Skrilla.mp3?rlkey=78ws95d5yfj1cmcqb4rw6qnkv&st=ia8vwr4v&dl=0" },
+      { title: "MONTAGEM RUGADA - Sayfalse", url: "https://dl.dropboxusercontent.com/scl/fi/2c9x2nyacb58enufd1qdn/MONTAGEM-RUGADA-MAFIA.mp3?rlkey=cyinx1utlqd75j6us03u20iho&st=ic0zkumo&dl=0" },
+      { title: "500lbs - Lil Tecca", url: "https://dl.dropboxusercontent.com/scl/fi/4jyrdn710z8udk041367o/Lil-Tecca-500lbs-Official-Audio-Lil-Tecca.mp3?rlkey=vwl6mxphfbi1m82x6lwowzkjz&st=820bpjgb&dl=0" }
+    ];
 
-<script>
-// Page toggle
-const homeLink = document.getElementById('homeLink');
-const gamesLink = document.getElementById('gamesLink');
-const proxiesLink = document.getElementById('proxiesLink');
-const homePage = document.getElementById('homePage');
-const gamesPage = document.getElementById('gamesPage');
-const proxiesPage = document.getElementById('proxiesPage');
+    const songList = document.getElementById("songList");
+    const audioElement = document.getElementById("audio");
+    const playPause = document.getElementById("playPause");
+    const back5 = document.getElementById("back5");
+    const forward5 = document.getElementById("forward5");
+    const repeat = document.getElementById("repeat");
+    const progress = document.getElementById("progress");
+    const volume = document.getElementById("volume");
+    const bass = document.getElementById("bass");
+    const currentTitle = document.getElementById("currentTitle");
 
-homeLink.addEventListener('click', () => { homePage.classList.add('active'); gamesPage.classList.remove('active'); proxiesPage.classList.remove('active'); });
-gamesLink.addEventListener('click', () => { gamesPage.classList.add('active'); homePage.classList.remove('active'); proxiesPage.classList.remove('active'); });
-proxiesLink.addEventListener('click', () => { proxiesPage.classList.add('active'); homePage.classList.remove('active'); gamesPage.classList.remove('active'); });
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const track = audioCtx.createMediaElementSource(audioElement);
+    const gainNode = audioCtx.createGain();
+    const bassFilter = audioCtx.createBiquadFilter();
+    bassFilter.type = "lowshelf";
+    bassFilter.frequency.value = 200;
+    bassFilter.gain.value = bass.value;
 
-// Particles
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-let width = canvas.width = window.innerWidth;
-let height = canvas.height = window.innerHeight;
-window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
-class Particle { constructor() { this.reset(); } reset() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 3 + 1; this.speedX = (Math.random() - 0.5) * 1; this.speedY = (Math.random() - 0.5) * 1; this.alpha = Math.random() * 0.5 + 0.2; } update() { this.x += this.speedX; this.y += this.speedY; if(this.x < 0 || this.x > width || this.y < 0 || this.y > height) { this.reset(); } } draw() { ctx.fillStyle = `rgba(255,255,255,${this.alpha})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); } }
-const particlesArray = []; for(let i = 0; i < 100; i++) { particlesArray.push(new Particle()); }
-function animate() { ctx.clearRect(0, 0, width, height); particlesArray.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
-animate();
+    track.connect(bassFilter).connect(gainNode).connect(audioCtx.destination);
 
-// Open game in about:blank
-function openGame(url) {
-    const newTab = window.open('about:blank', '_blank');
-    newTab.document.write(`<!DOCTYPE html><html lang="en"><head><title>about:blank</title><style>body{margin:0;padding:0;overflow:hidden;background:#000;display:flex;justify-content:center;align-items:center;height:100vh;}iframe{width:100%;height:100%;border:none;}</style></head><body><iframe src="${url}"></iframe></body></html>`);
-    newTab.focus();
-}
+    document.body.addEventListener("click", () => {
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }, { once: true });
 
-// Random proxy links
-const proxyLinks = [
-    "https://c9qc3x2rttch.awesine.com/",
-    "https://93ey5fgevv98.buddhalimbu.com.np/",
-    "https://jpzxj04sr45n.matribhumimf.com.np/",
-    "https://hj26ej95p3iz.netseclabs.gr/"
-];
+    songs.forEach((song, index) => {
+      const btn = document.createElement("button");
+      btn.textContent = song.title;
+      btn.className = "song-button";
+      btn.onclick = () => loadSong(index);
+      songList.appendChild(btn);
+    });
 
-// Proxy listener - open in new tab
-document.getElementById('pizzaBtn').addEventListener('click', () => {
-    const link = proxyLinks[Math.floor(Math.random() * proxyLinks.length)];
-    window.open(link, '_blank'); // opens in new tab
-});
+    function loadSong(index) {
+      audioElement.src = songs[index].url;
+      currentTitle.textContent = songs[index].title;
+      audioElement.play();
+      playPause.textContent = "⏸️";
+    }
 
-// Games listeners
-document.getElementById('crazyCarsBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/CC/CC.html'); });
-document.getElementById('lolBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/1v1/1v1.LoL.html'); });
-document.getElementById('aswcBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/aswc/ASWC.html'); });
-document.getElementById('angryBirdsBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/AB/AB.html'); });
-document.getElementById('bouncemastersBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/BMa/Bouncemasters.html'); });
-document.getElementById('candyCrushBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/CandyC/CC.html'); });
-document.getElementById('drawJoustBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/DJ/DJ.html'); });
-document.getElementById('driveMadBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/DM/DM.html'); });
-document.getElementById('rainbowObbyBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/RO/RO.html'); });
-document.getElementById('bloodMoneyBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/BMY/BMY.html'); });
-document.getElementById('mc1122Btn').addEventListener('click', () => { openGame('https://auresowner.github.io/GAMES/MC1122.html'); });
-document.getElementById('moneyRushBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/GAMES/MNYR.html'); });
-document.getElementById('mx3m2Btn').addEventListener('click', () => { openGame('https://auresowner.github.io/GAMES/MX3M2.html'); });
-document.getElementById('mx3m3Btn').addEventListener('click', () => { openGame('https://auresowner.github.io/GAMES/MX3M3.html'); });
-document.getElementById('mx3mppBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/GAMES/MX3MPP.html'); });
-document.getElementById('mx3msBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/GAMES/MX3MS.html'); });
-document.getElementById('pvzBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/GAMES/PvZ.html'); });
-document.getElementById('run3Btn').addEventListener('click', () => { openGame('https://auresowner.github.io/GAMES/R3.html'); });
-document.getElementById('ragdollArchersBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/GAMES/RA.html'); });
-document.getElementById('fnafBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/FNAF1/FNAF1.html'); });
-document.getElementById('fnaf2Btn').addEventListener('click', () => { openGame('https://auresowner.github.io/FNAF2/FNAF2.html'); });
-document.getElementById('fnaf3Btn').addEventListener('click', () => { openGame('https://auresowner.github.io/FNAF3/FNAF3.html'); });
-document.getElementById('fnaf4Btn').addEventListener('click', () => { openGame('https://auresowner.github.io/FNAF4/FNAF4.html'); });
-document.getElementById('fnaf4hlwnBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/FNAF4hlwn/FNAF4hlwn.html'); });
-document.getElementById('gdlBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/GDL/GDL.html'); });
-document.getElementById('gbBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/GB/GB.html'); });
-document.getElementById('tr2Btn').addEventListener('click', () => { openGame('https://auresowner.github.io/TR2/TR2.html'); });
-document.getElementById('tfBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/TS3S/TF.html'); });
-document.getElementById('ts3sBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/TS3S/TS3S.html'); });
-document.getElementById('undertaleBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/TS3S/UDT.html'); });
-document.getElementById('shBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/SH/SH.html'); });
-document.getElementById('brBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/BR/BR.html'); });
-document.getElementById('bbBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/BB/BB.html'); });
-document.getElementById('bridgerBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/BR1/BR.html'); });
-document.getElementById('borBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/BR1/BOR.html'); });
-document.getElementById('cookiecBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/BR1/CookieC.html'); });
-document.getElementById('badpBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/BR1/BP.html'); });
-document.getElementById('fmBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/FM/FM.html'); });
-document.getElementById('fmBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/FN/FN.html'); });
-document.getElementById('gn1Btn').addEventListener('click', () => { openGame('https://auresowner.github.io/G/G.html'); });
-document.getElementById('gn2Btn').addEventListener('click', () => { openGame('https://auresowner.github.io/G/G2.html'); });
-document.getElementById('gsBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/G/GS.html'); });
-document.getElementById('hhBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/G/HH.html'); });
-document.getElementById('jjBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/G/JJ.html'); });
-document.getElementById('rbBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/G/RB.html'); });
-document.getElementById('rbcBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/G/RBC.html'); });
-document.getElementById('srBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/G/SR.html'); });
-document.getElementById('sr3dBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/G/SR3D.html'); });
-document.getElementById('ssmaBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/SSMA/SOLARS.html'); });
-document.getElementById('sprBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/SPRU/SPRU.html'); });
-document.getElementById('ssbBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/SSB/SSBAR.html'); });
-document.getElementById('tr3dBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/TR3D/TR3DS.html'); });
-document.getElementById('sioBtn').addEventListener('click', () => { openGame('https://auresowner.github.io/SIOS/SIOS.html'); });
-</script>
-<script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
-<script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
-<script src="/active/register-sw.js" charset="UTF-8" defer></script>
-<script src="/active/search.js" charset="UTF-8" defer></script>
-<script src="/active/index.js" charset="UTF-8" defer></script>
+    playPause.onclick = () => {
+      if (audioElement.paused) {
+        audioElement.play();
+        playPause.textContent = "⏸️";
+      } else {
+        audioElement.pause();
+        playPause.textContent = "▶️";
+      }
+    };
+
+    back5.onclick = () => { audioElement.currentTime -= 5; };
+    forward5.onclick = () => { audioElement.currentTime += 5; };
+
+    repeat.onclick = () => {
+      audioElement.loop = !audioElement.loop;
+      repeat.style.color = audioElement.loop ? "grey" : "white";
+    };
+
+    audioElement.ontimeupdate = () => {
+      progress.value = (audioElement.currentTime / audioElement.duration) * 100 || 0;
+    };
+
+    progress.oninput = () => {
+      audioElement.currentTime = (progress.value / 100) * audioElement.duration;
+    };
+
+    volume.oninput = () => {
+      gainNode.gain.value = volume.value * 3;
+    };
+
+    bass.oninput = () => {
+      bassFilter.gain.value = bass.value;
+    };
+
+    const canvas = document.getElementById("visualizer");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    track.connect(analyser);
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    function draw() {
+      requestAnimationFrame(draw);
+      analyser.getByteFrequencyData(dataArray);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = (canvas.width / bufferLength) * 2.5;
+      let x = 0;
+
+      for(let i = 0; i < bufferLength; i++) {
+        const barHeight = dataArray[i];
+        ctx.fillStyle = "white";
+        ctx.shadowColor = "white";
+        ctx.shadowBlur = 20;
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+        x += barWidth + 1;
+      }
+    }
+
+    draw();
+  </script>
 </body>
 </html>
-
-
-
-
-
-
