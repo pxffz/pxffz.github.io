@@ -76,6 +76,13 @@ body{min-height:100vh;font-family:'Press Start 2P',cursive;color:#fff;background
         <input type="text" class="search-bar" placeholder="Search movies, shows, games...">
         <button class="search-button"><i class="fas fa-search"></i></button>
     </div>
+
+</div>
+
+    <form id="uv-form" class="search-form">
+      <input id="uv-search-engine" value="https://duckduckgo.com/&q=%s" type="hidden"/> 
+      <input id="uv-address" type="text" placeholder="Search DuckDuckGo or type a URL" class="search-input"/>
+    </form>
 </div>
 
 <a href="https://discord.gg/YpxnycpwDW" class="discord-btn" target="_blank"><i class="fab fa-discord"></i> Join Our Discord</a>
@@ -111,9 +118,7 @@ function typeWriter(){const msg=messages[messageIndex];if(isDeleting){typingElem
 typeWriter();
 
 /* Search */
-function doSearch(){const term=document.querySelector('.search-bar').value.trim();if(term!==''){window.location.href=`https://sites.google.com/search/fus3-bomb?query=${encodeURIComponent(term)}&scope=site&showCloudSearchTab=false`;}}
-document.querySelector('.search-button').addEventListener('click',doSearch);
-document.querySelector('.search-bar').addEventListener('keypress',e=>{if(e.key==='Enter')doSearch();});
+
 
 /* Battery */
 function updateBattery(){if('getBattery' in navigator){navigator.getBattery().then(battery=>{function updateAll(){const level=Math.floor(battery.level*100);document.getElementById('battery-percent').textContent=`${level}%`;document.getElementById('battery-level').style.width=`${level}%`;const batteryOval=document.getElementById('battery-oval');if(battery.charging){batteryOval.classList.add('charging');document.getElementById('battery-level').style.background='linear-gradient(to right,#00ffaa,#00cc88)';}else{batteryOval.classList.remove('charging');if(level<=20)document.getElementById('battery-level').style.background='linear-gradient(to right,#ff5555,#ff0000)';else if(level<=50)document.getElementById('battery-level').style.background='linear-gradient(to right,#ffaa00,#ffcc00)';else document.getElementById('battery-level').style.background='linear-gradient(to right,#00ffaa,#00cc88)';}}updateAll();battery.addEventListener('levelchange',updateAll);battery.addEventListener('chargingchange',updateAll);});}else document.getElementById('battery-container').style.display='none';}
@@ -123,5 +128,10 @@ updateBattery();
 function updateClock(){const now=new Date();const timeElement=document.getElementById('clock-time');const dateElement=document.getElementById('clock-date');const h=now.getHours().toString().padStart(2,'0');const m=now.getMinutes().toString().padStart(2,'0');const s=now.getSeconds().toString().padStart(2,'0');timeElement.textContent=`${h}:${m}:${s}`;const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];const months=['January','February','March','April','May','June','July','August','September','October','November','December'];dateElement.textContent=`${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;}
 updateClock();setInterval(updateClock,1000);
 </script>
+<script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
+<script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
+<script src="/active/register-sw.js" charset="UTF-8" defer></script>
+<script src="/active/search.js" charset="UTF-8" defer></script>
+<script src="/active/index.js" charset="UTF-8" defer></script>
 </body>
 </html>
