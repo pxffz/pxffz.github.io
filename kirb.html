@@ -72,11 +72,31 @@ body{min-height:100vh;font-family:'Press Start 2P',cursive;color:#fff;background
             <div class="marquee-text" data-text="Might be the best update of all time - Owner">Might be the best update of all time - Owner</div>
         </div>
     </div>
-    <div class="search-container">
-        <input type="text" class="search-bar" placeholder="Search movies, shows, games...">
-        <button class="search-button"><i class="fas fa-search"></i></button>
-    </div>
+<div class="search-container">
+    <form id="uv-form" class="search-form" onsubmit="return uvSearch(this);">
+        <input id="uv-search-engine" value="https://duckduckgo.com/?q=%s" type="hidden"/> 
+        <input id="uv-address" type="text" placeholder="Search DuckDuckGo or type a URL" class="search-bar"/>
+        <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
+    </form>
 </div>
+
+<script>
+function uvSearch(form) {
+    const engine = form.querySelector('#uv-search-engine').value;
+    let query = form.querySelector('#uv-address').value.trim();
+    if (!query) return false;
+    
+    // Check if it's a URL
+    if (/^(https?:\/\/)/i.test(query)) {
+        window.open(query, '_blank');
+    } else {
+        const searchURL = engine.replace('%s', encodeURIComponent(query));
+        window.open(searchURL, '_blank');
+    }
+    return false; // prevent form submission
+}
+</script>
+
 
 <a href="https://discord.gg/YpxnycpwDW" class="discord-btn" target="_blank"><i class="fab fa-discord"></i> Join Our Discord</a>
 
