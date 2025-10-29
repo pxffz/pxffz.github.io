@@ -88,7 +88,15 @@ function uvSearch(form) {
 }
 </script>
 
-<a href="https://google.com/" class="discord-btn" target="_blank"><i class="fab fa-discord"></i>EMERGENCY BUTTON</a>
+<a href="#" class="discord-btn" id="emergency-btn"><i class="fa-brands fa-google"></i> EMERGENCY PANIC</a>
+
+<script>
+document.getElementById('emergency-btn').addEventListener('click', function(e){
+    e.preventDefault(); // prevent default link behavior
+    window.location.replace('https://google.com');
+});
+</script>
+
 
 <script>
 /* =========================
