@@ -101,9 +101,51 @@ initPoints();animate();
 window.addEventListener('resize',()=>{resizeCanvas();initPoints();});
 
 /* Cursor */
-const cursor=document.querySelector('.custom-cursor'),follower=document.querySelector('.cursor-follower');
-document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';setTimeout(()=>{follower.style.left=e.clientX+'px';follower.style.top=e.clientY+'px';},50);});
-document.querySelectorAll('button,a,input').forEach(el=>{el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(1.5)';cursor.style.backgroundColor='rgba(255,255,255,1)';follower.style.width='50px';follower.style.height='50px';follower.style.background='radial-gradient(circle,rgba(255,255,255,0.6)0%,rgba(255,255,255,0)70%)';});el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';cursor.style.backgroundColor='rgba(255,255,255,0.9)';follower.style.width='30px';follower.style.height='30px';follower.style.background='radial-gradient(circle,rgba(255,255,255,0.4)0%,rgba(255,255,255,0)70%)';});});
+const cursor = document.querySelector('.custom-cursor');
+const follower = document.querySelector('.cursor-follower');
+
+let mouseX = 0, mouseY = 0;
+let followerX = 0, followerY = 0;
+
+// Update mouse coordinates
+document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    // Move main cursor immediately
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+});
+
+// Animate follower smoothly
+function animateFollower() {
+    followerX += (mouseX - followerX) * 0.2; // smoothing factor
+    followerY += (mouseY - followerY) * 0.2;
+
+    follower.style.left = followerX + 'px';
+    follower.style.top = followerY + 'px';
+
+    requestAnimationFrame(animateFollower);
+}
+animateFollower();
+
+// Hover effects
+document.querySelectorAll('button,a,input').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+        cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+        cursor.style.backgroundColor = 'rgba(255,255,255,1)';
+        follower.style.width = '50px';
+        follower.style.height = '50px';
+        follower.style.background = 'radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 70%)';
+    });
+    el.addEventListener('mouseleave', () => {
+        cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        cursor.style.backgroundColor = 'rgba(255,255,255,0.9)';
+        follower.style.width = '30px';
+        follower.style.height = '30px';
+        follower.style.background = 'radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%)';
+    });
+});
 
 /* Typing animation */
 const messages=["Chill Kirb Central","チルカーブセントラル","Chill Kirb Develpment","Chill Vault X V6.5","Chill Kirb Network","Chill Gamez"];
@@ -112,7 +154,7 @@ function typeWriter(){const msg=messages[messageIndex];if(isDeleting){typingElem
 typeWriter();
 
 /* Search */
-    <form id="uv-form" class="search-form">
+<form id="uv-form" class="search-form">
       <input id="uv-search-engine" value="https://duckduckgo.com/&q=%s" type="hidden"/> 
       <input id="uv-address" type="text" placeholder="Search DuckDuckGo or type a URL" class="search-input"/>
     </form>
