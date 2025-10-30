@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VYRT MUSIC 💫</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      height: 100vh;
+      font-family: "Poppins", sans-serif;
+      color: #fff;
+    }
+
+    .firefly {
+      position: absolute;
+      background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+      opacity: 0.8;
+      width: 6px;
+      height: 6px;
+      animation: flicker 3s infinite ease-in-out alternate;
+      filter: blur(3px);
+    }
+
+    @keyframes flicker {
+      0% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.2; transform: scale(0.8); }
+    }
+
+    .player-menu {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(100, 100, 100, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      width: 400px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+      z-index: 10;
+    }
+
+    .song-list {
+      margin-bottom: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .song-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .song-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 3px;
+    }
+
+    .song-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.6);
+    }
+
+    .song-button {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.2s;
+    }
+
+    .song-button:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .controls button {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .controls button:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .slider {
+      width: 100%;
+    }
+
+    .volume-control, .bass-control {
+      margin-top: 10px;
+    }
+
+    h3 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    /* Add Music Button */
+    .add-music-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 20;
+    }
+
+    .add-music-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 20px white;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="add-music-btn" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSfNRXVTxCmd86bqSul31uW36coln96SvR23hHWLx665XFuC4Q/viewform?usp=sharing&ouid=110076343776724203786', '_blank')">
+    ADD MUSIC
+  </button>
+
+  <canvas id="visualizer"></canvas>
+
+  <div class="player-menu">
+    <div class="song-list" id="songList"></div>
+
+    <h3 id="currentTitle">No song selected</h3>
+    <audio id="audio" crossorigin="anonymous"></audio>
+
+    <div class="controls">
+      <button id="back5">⏪ -5s</button>
+      <button id="playPause">▶️</button>
+      <button id="forward5">⏩ +5s</button>
+      <button id="repeat">🔁</button>
+    </div>
+
+    <input type="range" id="progress" class="slider" min="0" max="100" value="0">
+    <div class="volume-control">
+      Volume: <input type="range" id="volume" class="slider" min="0" max="1" step="0.01" value="0.5">
+    </div>
+    <div class="bass-control">
+      Bass: <input type="range" id="bass" class="slider" min="0" max="5" step="0.1" value="1">
+    </div>
+  </div>
+
+  <script>
+    const songs = [
+      { title: "Ransom - Lil Tecca", url: "https://dl.dropboxusercontent.com/scl/fi/luwd8s86vof4rvufmu4e7/Lil-Tecca-Ransom-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=8es0stu8bxfg8gvbw06zm6dqd&st=krsgjj8a&dl=0" },
+      { title: "TV OFF - Kendrick Lamar", url: "https://dl.dropboxusercontent.com/scl/fi/l0lxg4sii5k6y7916vala/Kendrick-Lamar-tv-off-Official-Audio-Kendrick-Lamar.mp3?rlkey=1yhv84lbb9z9w5ow2c00jtfr7&st=ocuyf8od&dl=0" },
+      { title: "Not Like Us - Kendrick Lamar", url: "https://dl.dropboxusercontent.com/scl/fi/ydelvccjhl7kh6j8126n3/Kendrick-Lamar-Not-Like-Us-KendrickLamarVEVO.mp3?rlkey=8yg6uuql9o3uevsm3m6drobzh&st=k2619iz6&dl=0" },
+      { title: "Robbery - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/bgmogl61w0fbbf3rlfqhi/Juice-WRLD-Robbery-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=4no8kslzlao743q0v1mih82hi&st=pleqk1nf&dl=0" },
+      { title: "Righteous - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/6jsrxfuwlf6nw1izq33qn/Juice-WRLD-Righteous-Official-Video-Juice-WRLD.mp3?rlkey=894costjcskui5340mwub1y4r&st=9il65ijt&dl=0" },
+      { title: "Lucid Dreams - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/2njd07vnel1dgvh7w0v3b/Juice-WRLD-Lucid-Dreams-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=wa0t8r8keto8yl7fi5p5kzpig&st=904vl9vh&dl=0" },
+      { title: "In My Head - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/u6q5uesxfe2giz4xqd3ks/Juice-WRLD-In-My-Head-JuiceWRLDVEVO.mp3?rlkey=1n1810rjtd3bl7oec6m3r1n6e&st=lkcxfoqm&dl=0" },
+      { title: "Bandit - Juicewrld", url: "https://dl.dropboxusercontent.com/scl/fi/vlzmac7mgkid9kqw26rvk/Juice-WRLD-Bandit-ft.-NBA-Youngboy-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=a9jhv76lumg76w3azbwbyiuoo&st=6zyadcd0&dl=0" },
+      { title: "BAND4BAND - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/ci450c4ixn9wsgaatyu9m/CENTRAL-CEE-FT.-LIL-BABY-BAND4BAND-MUSIC-VIDEO-Central-Cee.mp3?rlkey=65eznaq33u6iyczpldx32aop5&st=l1xb98h6&dl=0" },
+      { title: "Loading - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/h5wmu9t3dp0qb93udfbms/Central-Cee-Loading-Music-Video-GRM-Daily-GRM-Daily.mp3?rlkey=xrced3ku1csr7cjk8vpxear0b&st=9gdwg9p5&dl=0" },
+      { title: "Doja - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/o7iz1vm4q3q72f3eme9ej/Central-Cee-Doja-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=bzj382w23j70ommo1ir00pegm&st=5mqrhr49&dl=0" },
+      { title: "Sprinter - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/my4z2swzvq1y7wj4avphq/Central-Cee-x-Dave-Sprinter-Music-Video-Central-Cee.mp3?rlkey=1qzm1ucyyf4be7rmybwomnbz8&st=cs9y6z40&dl=0" },
+      { title: "6 for 6 - Central Cee", url: "https://dl.dropboxusercontent.com/scl/fi/ofz4sn0w9tq8k85gj80m8/Central-Cee-6-For-6-Music-Video-Central-Cee.mp3?rlkey=kf4l50q2swa0c6fu5ygazv1x6&st=1v3xpaxr&dl=0" },
+      { title: "Timeless - The Weeknd", url: "https://dl.dropboxusercontent.com/scl/fi/fy8d05qvk47cwq8kmtw08/The-Weeknd-Playboi-Carti-Timeless-TheWeekndVEVO.mp3?rlkey=eubuxw2p42p32865b441bz073&st=3s178i81&dl=0" },
+      { title: "FE!N - Travis Scott", url: "https://dl.dropboxusercontent.com/scl/fi/c0nzo27lknmhn95mi8mmg/Travis-Scott-FE-N-ft.-Playboi-Carti-TravisScottVEVO.mp3?rlkey=xuh5mae5uqe1tu07jwk4k8b3i&st=ysx1968q&dl=0" },
+      { title: "Goosebumps - Travis Scott", url: "https://dl.dropboxusercontent.com/scl/fi/2rzd41ojxhdw7cn89dmy9/Travis-Scott-goosebumps-ft.-Kendrick-Lamar-TravisScottVEVO.mp3?rlkey=xyayelf0o7e97vxr2oy9md49f&st=7dqnhhzo&dl=0" },
+      { title: "Vamp Anthem - Playboi Carti", url: "https://dl.dropboxusercontent.com/scl/fi/apv86xblk0hjjhabq87k1/Playboi-Carti-Vamp-Anthem-Official-Audio-Playboi-Carti.mp3?rlkey=ukbkf24fvewutsmf3e04j6aue&st=mc6gsltw&dl=0" },
+      { title: "Walk - Comethazine", url: "https://dl.dropboxusercontent.com/scl/fi/sw2jn151icprnp9yknoro/Comethazine-Walk-Official-Music-Video-Lyrical-Lemonade.mp3?rlkey=ublf1mttzc5hh8ojplcvqrwme&st=g3vzjfn1&dl=0" },
+      { title: "Murder On My Mind - YNW Melly", url: "https://dl.dropboxusercontent.com/scl/fi/6o75o7ad2z9ivhmxf8zt9/YNW-Melly-Murder-On-My-Mind-Official-Video-YNW-Melly.mp3?rlkey=97e7gwygwanqrpovx60sn7jwm&st=06lfx9vg&dl=0" },
+      { title: "F*ck Love - XXXTENTACION", url: "https://dl.dropboxusercontent.com/scl/fi/zcjp3nu9ajbcwvbwo6fpo/Fck-love-XXXTENTACIONXXX-Ft.-Trippie-Redd-Xertix.mp3?rlkey=lsbk8a7ktgp4i3ixlh0som2rx&st=dw4zv7ce&dl=0" },
+      { title: "Revenge - XXXTENTACION", url: "https://dl.dropboxusercontent.com/scl/fi/4y2dwrp8wx0td3y4r8bhm/XXXTENTACION-Revenge-Audio-XXXTENTACION.mp3?rlkey=dx7v50c0r9atq78g7r2fpacz4&st=pwa79a5l&dl=0" },
+      { title: "The Grinch - Trippie Redd", url: "https://dl.dropboxusercontent.com/scl/fi/q73vvhrf9cdzwqikuudyk/Trippie-Redd-The-Grinch-TrippieReddVEVO.mp3?rlkey=9g54xbdvellxm9ptmoo7e5k3h&st=of07s0q6&dl=0" },
+      { title: "RAP - Lil Darkie", url: "https://dl.dropboxusercontent.com/scl/fi/vysepchd2959dwj5tnvqk/LIL-DARKIE-RAP-MUSIC-PROD.-WENDIGO-MUSIC-VIDEO-Spider-Gang.mp3?rlkey=gp95my9zkh9asqhax57mhk626&st=oac171n7&dl=0" },
+      { title: "HOLOCAUST - Lil Darkie", url: "https://dl.dropboxusercontent.com/scl/fi/qbne6dw8adoe27c8ia0lv/HOLOCAUST-Lil-Darkie.mp3?rlkey=qze2tkh5bf1lt3ejcy0ex32qj&st=h8be1tjv&dl=0" },
+      { title: "DIA DELICIA - NAKAMA", url: "https://dl.dropboxusercontent.com/scl/fi/5aht6qsueftkq4m5wm83v/DIA-DEL-CIA-NAKAMA-Official-Music-Video-Nakama.mp3?rlkey=5bu3n8bx4e739oiq3wx3gf7gq&st=5cx3hl5g&dl=0" },
+      { title: "DNA - LXNGVX", url: "https://dl.dropboxusercontent.com/scl/fi/z4ultxbe3t3q1s8varfgn/DNA-LXNGVX.mp3?rlkey=66xb2qghn76fwyj8eopk1agei&st=t4qg3jnr&dl=0" },
+      { title: "FUNK DO BOUNCE - Ariis", url: "https://dl.dropbox.com/scl/fi/9erszjoryr6oukfp78bdk/Ariis-FUNK-DO-BOUNCE-Brazilian-Funk-TheGoodVibe.mp3?rlkey=zx8s991szkpn5s4eufqfjdk22&st=ou2xr3hk&dl=0" },
+      { title: "Its Just Tradition (GAY ASS SONG😨) - BiscuitBeatsAI", url: "https://dl.dropbox.com/scl/fi/54rhh6x0lulleidncue99/It-s-Just-Tradition-Official-Lyric-Video-Biscuit-Beats.mp3?rlkey=ke19xj6elfl5hm3f1g1y2d3d2&st=x24vxp2b&dl=0" },
+      { title: "PSA - Kay Flock", url: "https://dl.dropbox.com/scl/fi/zlsedh06t4uls6rhmeg0d/Kay-Flock-PSA-Official-Video-Kay-Flock.mp3?rlkey=wd9hs6zylq955xvcv6vsvoqoa&st=ccf8gjft&dl=0" },
+      { title: "SOL VIBRA - DJ ZAREK", url: "https://dl.dropboxusercontent.com/scl/fi/yhld02nhkv67ybatemdzy/SOL-VIBRA-Slowed-DJ-Zarek.mp3?rlkey=sy5qtggjtiu0o52bq9an5qufc&st=oyp1xz00&dl=0" },
+      { title: "HEADSHOT 223 / GAS IN THE TRUCK - ISHOWSPEED", url: "https://dl.dropboxusercontent.com/scl/fi/enhemvj0xzofug4rtzuw5/IShowSpeed-Headshot-_-Gas-in-the-Truck-Official-Music-Video-IShowSpeed.mp3?rlkey=hcnxaiysk1uv3z6553x0w96an&st=iu59pfw2&dl=0" },
+      { title: "Doot Doot (67) - Skrilla", url: "https://dl.dropboxusercontent.com/scl/fi/v6fb2samn07dujwvowh9n/Skrilla-Doot-Doot-6-7-Official-Music-Video-Skrilla.mp3?rlkey=78ws95d5yfj1cmcqb4rw6qnkv&st=ia8vwr4v&dl=0" },
+      { title: "MONTAGEM RUGADA - Sayfalse", url: "https://dl.dropboxusercontent.com/scl/fi/2c9x2nyacb58enufd1qdn/MONTAGEM-RUGADA-MAFIA.mp3?rlkey=cyinx1utlqd75j6us03u20iho&st=ic0zkumo&dl=0" },
+      { title: "500lbs - Lil Tecca", url: "https://dl.dropboxusercontent.com/scl/fi/4jyrdn710z8udk041367o/Lil-Tecca-500lbs-Official-Audio-Lil-Tecca.mp3?rlkey=vwl6mxphfbi1m82x6lwowzkjz&st=820bpjgb&dl=0" }
+    ];
+
+    const songList = document.getElementById("songList");
+    const audioElement = document.getElementById("audio");
+    const playPause = document.getElementById("playPause");
+    const back5 = document.getElementById("back5");
+    const forward5 = document.getElementById("forward5");
+    const repeat = document.getElementById("repeat");
+    const progress = document.getElementById("progress");
+    const volume = document.getElementById("volume");
+    const bass = document.getElementById("bass");
+    const currentTitle = document.getElementById("currentTitle");
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const track = audioCtx.createMediaElementSource(audioElement);
+    const gainNode = audioCtx.createGain();
+    const bassFilter = audioCtx.createBiquadFilter();
+    bassFilter.type = "lowshelf";
+    bassFilter.frequency.value = 200;
+    bassFilter.gain.value = bass.value;
+
+    track.connect(bassFilter).connect(gainNode).connect(audioCtx.destination);
+
+    document.body.addEventListener("click", () => {
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }, { once: true });
+
+    songs.forEach((song, index) => {
+      const btn = document.createElement("button");
+      btn.textContent = song.title;
+      btn.className = "song-button";
+      btn.onclick = () => loadSong(index);
+      songList.appendChild(btn);
+    });
+
+    function loadSong(index) {
+      audioElement.src = songs[index].url;
+      currentTitle.textContent = songs[index].title;
+      audioElement.play();
+      playPause.textContent = "⏸️";
+    }
+
+    playPause.onclick = () => {
+      if (audioElement.paused) {
+        audioElement.play();
+        playPause.textContent = "⏸️";
+      } else {
+        audioElement.pause();
+        playPause.textContent = "▶️";
+      }
+    };
+
+    back5.onclick = () => { audioElement.currentTime -= 5; };
+    forward5.onclick = () => { audioElement.currentTime += 5; };
+
+    repeat.onclick = () => {
+      audioElement.loop = !audioElement.loop;
+      repeat.style.color = audioElement.loop ? "grey" : "white";
+    };
+
+    audioElement.ontimeupdate = () => {
+      progress.value = (audioElement.currentTime / audioElement.duration) * 100 || 0;
+    };
+
+    progress.oninput = () => {
+      audioElement.currentTime = (progress.value / 100) * audioElement.duration;
+    };
+
+    volume.oninput = () => {
+      gainNode.gain.value = volume.value * 3;
+    };
+
+    bass.oninput = () => {
+      bassFilter.gain.value = bass.value;
+    };
+
+    const canvas = document.getElementById("visualizer");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    track.connect(analyser);
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    function draw() {
+      requestAnimationFrame(draw);
+      analyser.getByteFrequencyData(dataArray);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = (canvas.width / bufferLength) * 2.5;
+      let x = 0;
+
+      for(let i = 0; i < bufferLength; i++) {
+        const barHeight = dataArray[i];
+        ctx.fillStyle = "white";
+        ctx.shadowColor = "white";
+        ctx.shadowBlur = 20;
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+        x += barWidth + 1;
+      }
+    }
+
+    draw();
+  </script>
+</body>
+</html>
