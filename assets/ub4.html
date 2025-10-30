@@ -8,12 +8,17 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
 
+:root {
+  --accent: #fff;
+  --bg-alpha: rgba(0,0,0,0.75);
+}
+
 html, body {
   height:100%;
   margin:0;
   background:#000;
   font-family:'Pixelify Sans', sans-serif;
-  color:#fff;
+  color:var(--accent);
   overflow:hidden;
   cursor:none;
 }
@@ -29,20 +34,12 @@ canvas#matrix {
   background:#000;
 }
 
-/* Fog effect (optional) */
+/* Animated Fog (Snow) */
 .fog {
   position:fixed;
   inset:0;
   z-index:1;
   pointer-events:none;
-  background:radial-gradient(circle at 30% 50%, rgba(255,255,255,0.05), transparent 70%),
-              radial-gradient(circle at 70% 60%, rgba(255,255,255,0.05), transparent 70%);
-  animation:moveFog 30s infinite alternate ease-in-out;
-}
-@keyframes moveFog {
-  0% { transform:translate(0,0) scale(1);}
-  50% { transform:translate(30px, -30px) scale(1.1);}
-  100% { transform:translate(-20px, 20px) scale(1);}
 }
 
 /* UI elements */
@@ -53,43 +50,43 @@ canvas#matrix {
   pointer-events:none;
 }
 
-/* Clock */
 #time-display {
   position:fixed;
   top:16px;
   right:20px;
-  background:rgba(0,0,0,0.7);
-  border:2px solid #fff;
+  background:var(--bg-alpha);
+  border:2px solid var(--accent);
   border-radius:10px;
   padding:8px 12px;
-  text-align:right;
+  color:#fff;
   pointer-events:none;
+  text-align:right;
 }
-#time24, #time12 { color:#fff; }
 
-/* System Info */
+#time24, #time12 { display:block; color:#fff; }
+
+/* Stats */
 #stats-box {
   position:fixed;
   bottom:16px;
   right:16px;
   width:320px;
-  background:rgba(0,0,0,0.7);
-  border:2px solid #fff;
+  background:var(--bg-alpha);
+  border:2px solid var(--accent);
   border-radius:12px;
   padding:14px 16px;
   pointer-events:none;
   color:#fff;
 }
-#stats-box h2 { margin:0 0 8px 0; color:#fff; text-align:center; }
-.stat-line { margin:6px 0; }
+#stats-box h2 { margin:0 0 8px 0; text-align:center; }
 
-/* Signature / top-left menu */
+/* Signature */
 #signature {
   position:fixed;
   top:16px;
   left:20px;
-  background:rgba(0,0,0,0.7);
-  border:2px solid #fff;
+  background:var(--bg-alpha);
+  border:2px solid var(--accent);
   border-radius:12px;
   padding:10px 14px;
   white-space:nowrap;
@@ -99,7 +96,7 @@ canvas#matrix {
   display:inline-block;
   width:8px;
   height:16px;
-  background:#fff;
+  background:var(--accent);
   margin-left:8px;
   vertical-align:middle;
   animation:blink 1s step-start infinite;
@@ -139,17 +136,28 @@ canvas#matrix {
   outline:none;
   text-align:center;
 }
-.search-button {
-  border-radius:12px;
-  padding:10px 14px;
-  background:#fff;
+
+/* Squircle button */
+.custom-btn.btn-squircle {
+  width:50px;
+  height:50px;
+  border-radius:20px;
   border:none;
+  background:#fff;
   color:#000;
-  font-weight:600;
+  font-weight:bold;
   cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.2rem;
+  transition:0.2s;
+}
+.custom-btn.btn-squircle:hover {
+  transform:scale(1.1);
 }
 
-/* Custom cursor */
+/* Cursor */
 #custom-cursor {
   position:fixed;
   width:18px;
@@ -160,22 +168,6 @@ canvas#matrix {
   pointer-events:none;
   z-index:5;
   transform:translate(-50%, -50%);
-}
-
-/* Particles (snow) */
-.particle {
-  position:fixed;
-  width:4px;
-  height:4px;
-  background:#fff;
-  border-radius:50%;
-  opacity:0.6;
-  animation:floatParticle 6s linear infinite;
-}
-@keyframes floatParticle {
-  0% { transform:translateY(100vh) translateX(0); opacity:0.1; }
-  50% { opacity:0.9; }
-  100% { transform:translateY(-20vh) translateX(20px); opacity:0; }
 }
 
 @media (max-width:420px) {
@@ -215,7 +207,7 @@ canvas#matrix {
       <form id="uv-form" class="search-form" onsubmit="return uvSearch(this);">
         <input id="uv-search-engine" value="https://duckduckgo.com/?q=%s" type="hidden"/> 
         <input id="uv-address" type="text" placeholder="Search Something or Type a URL!" class="search-bar"/>
-        <button type="submit">Search</button>
+        <button type="submit" class="custom-btn btn-squircle">❄️</button>
       </form>
     </div>
   </div>
@@ -230,12 +222,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('matrix');
   const ctx = canvas.getContext('2d');
   let cw, ch, columns, drops, fontSize = 16, letters;
-
   function initMatrix() {
     cw = canvas.width = window.innerWidth;
     ch = canvas.height = window.innerHeight;
-    fontSize = Math.max(12, Math.floor(Math.min(cw, ch) / 60));
-    letters = 'CHRISTMAS2025❄️UNBL0CKEDZ0NE0123456789';
+    fontSize = Math.max(12, Math.floor(Math.min(cw, ch)/60));
+    letters = 'UNBL0CKEDZ0NE0123456789❄️';
     columns = Math.floor(cw / fontSize) || 1;
     drops = new Array(columns).fill(1);
     ctx.font = fontSize + 'px monospace';
@@ -245,15 +236,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let lastTime = 0;
   function matrixLoop(ts) {
-    if (ts - lastTime < 33) { requestAnimationFrame(matrixLoop); return; }
+    if(ts - lastTime < 33){ requestAnimationFrame(matrixLoop); return; }
     lastTime = ts;
     ctx.fillStyle = 'rgba(0,0,0,0.08)';
     ctx.fillRect(0,0,cw,ch);
     ctx.fillStyle = '#fff';
-    for (let i = 0; i < drops.length; i++) {
-      const text = letters.charAt(Math.floor(Math.random() * letters.length));
-      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-      if (drops[i] * fontSize > ch && Math.random() > 0.975) drops[i] = 0;
+    for(let i=0;i<drops.length;i++){
+      const text = letters.charAt(Math.floor(Math.random()*letters.length));
+      ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+      if(drops[i]*fontSize>ch && Math.random()>0.975) drops[i]=0;
       drops[i]++;
     }
     requestAnimationFrame(matrixLoop);
@@ -269,83 +260,92 @@ document.addEventListener('DOMContentLoaded', () => {
     const mm = String(now.getMinutes()).padStart(2,'0');
     const ss = String(now.getSeconds()).padStart(2,'0');
     time24El.textContent = `${hh}:${mm}:${ss}`;
-    let h12 = now.getHours() % 12 || 12;
-    const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+    let h12 = now.getHours()%12||12;
+    const ampm = now.getHours()>=12?'PM':'AM';
     time12El.textContent = `${String(h12).padStart(2,'0')}:${mm}:${ss} ${ampm}`;
   }
   tickClock(); setInterval(tickClock,1000);
 
   /* STATS */
-  try {
-    document.getElementById('screen-size').textContent = `${window.screen.width}x${window.screen.height}`;
-    document.getElementById('browser').textContent = (navigator.userAgent.split(') ')[1] || navigator.userAgent);
-    document.getElementById('platform').textContent = navigator.platform || 'Unknown';
-    document.getElementById('language').textContent = navigator.language || 'Unknown';
-    document.getElementById('cpu').textContent = navigator.hardwareConcurrency || 'Unknown';
-    document.getElementById('timezone').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  } catch(e) {}
-
+  document.getElementById('screen-size').textContent=`${window.screen.width}x${window.screen.height}`;
+  document.getElementById('browser').textContent=navigator.userAgent;
+  document.getElementById('platform').textContent=navigator.platform;
+  document.getElementById('language').textContent=navigator.language;
+  document.getElementById('cpu').textContent=navigator.hardwareConcurrency||'Unknown';
+  document.getElementById('timezone').textContent=Intl.DateTimeFormat().resolvedOptions().timeZone;
   function updateMemory(){
-    if (performance && performance.memory) {
-      const usedMB = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
-      const totalMB = (performance.memory.jsHeapSizeLimit / 1048576).toFixed(1);
-      document.getElementById('memory').textContent = `${usedMB} / ${totalMB} MB`;
-    } else {
-      document.getElementById('memory').textContent = 'Unavailable';
-    }
+    if(performance && performance.memory){
+      const usedMB=(performance.memory.usedJSHeapSize/1048576).toFixed(1);
+      const totalMB=(performance.memory.jsHeapSizeLimit/1048576).toFixed(1);
+      document.getElementById('memory').textContent=`${usedMB} / ${totalMB} MB`;
+    } else document.getElementById('memory').textContent='Unavailable';
   }
-  updateMemory(); setInterval(updateMemory, 2000);
+  updateMemory(); setInterval(updateMemory,2000);
 
   /* SIGNATURE */
   const signatureText = 'Made With Christmas Love By UNBLOCKEDZONE.';
   const sigEl = document.getElementById('signature-text');
-  let si = 0;
+  let si=0;
   function typeSig(){
-    if(si <= signatureText.length){
-      sigEl.textContent = signatureText.slice(0, si);
+    if(si<=signatureText.length){
+      sigEl.textContent=signatureText.slice(0,si);
       si++;
-      setTimeout(typeSig, 40 + Math.random()*60);
+      setTimeout(typeSig,40+Math.random()*60);
     }
   }
-  setTimeout(typeSig, 700);
+  setTimeout(typeSig,700);
 
   /* CURSOR */
-  const cursor = document.getElementById('custom-cursor');
-  document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
+  const cursor=document.getElementById('custom-cursor');
+  document.addEventListener('mousemove',e=>{
+    cursor.style.left=e.clientX+'px';
+    cursor.style.top=e.clientY+'px';
   });
 
   /* QUOTES */
-  const quotes = [
+  const quotes=[
     "Let it snow in the matrix...",
     "Unblocked and festive!",
     "Snowflakes > ghosts.",
     "Code jingles all the way.",
     "Santa sees your browser."
   ];
-  let qi = 0;
-  const quoteEl = document.getElementById('quote');
-  if (quoteEl) {
-    quoteEl.textContent = quotes[0];
-    setInterval(() => {
-      qi = (qi + 1) % quotes.length;
-      quoteEl.textContent = quotes[qi];
-    }, 5000);
+  let qi=0;
+  const quoteEl=document.getElementById('quote');
+  if(quoteEl){ quoteEl.textContent=quotes[0];
+    setInterval(()=>{ qi=(qi+1)%quotes.length; quoteEl.textContent=quotes[qi]; },5000);
   }
 
+  /* UV SEARCH: Enter key triggers squircle button */
+  const searchInput=document.getElementById('uv-address');
+  searchInput.addEventListener('keypress', e=>{
+    if(e.key==='Enter'){
+      e.preventDefault();
+      const form=searchInput.closest('form');
+      if(form) form.requestSubmit();
+    }
+  });
+
   /* SNOW PARTICLES */
-  for (let i = 0; i < 30; i++) {
-    const p = document.createElement('div');
+  for(let i=0;i<30;i++){
+    const p=document.createElement('div');
     p.classList.add('particle');
-    p.style.left = Math.random() * 100 + 'vw';
-    p.style.animationDelay = Math.random() * 6 + 's';
+    p.style.left=Math.random()*100+'vw';
+    p.style.animationDelay=Math.random()*6+'s';
     document.body.appendChild(p);
   }
 
-}); // end DOMContentLoaded
+}); // DOMContentLoaded
 
-function uvSearch(form) { return false; }
+function uvSearch(form){
+  const input=form.querySelector('#uv-address').value.trim();
+  const engine=form.querySelector('#uv-search-engine').value;
+  if(input){
+    const url=engine.replace('%s',encodeURIComponent(input));
+    window.location.href=url;
+  }
+  return false;
+}
 </script>
 
 <script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
