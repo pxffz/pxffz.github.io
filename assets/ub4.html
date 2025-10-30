@@ -34,14 +34,6 @@ canvas#matrix {
   background:#000;
 }
 
-/* Animated Fog (Snow) */
-.fog {
-  position:fixed;
-  inset:0;
-  z-index:1;
-  pointer-events:none;
-}
-
 /* UI elements */
 .ui {
   position:fixed;
@@ -120,14 +112,15 @@ canvas#matrix {
 .search-container {
   display:flex;
   justify-content:center;
+  align-items:center;
   gap:8px;
   margin-top:12px;
   pointer-events:auto;
 }
 .search-bar {
+  flex:1;
   border-radius:25px;
   padding:10px;
-  width:320px;
   font-family:inherit;
   font-size:1rem;
   border:2px solid #fff;
@@ -136,8 +129,6 @@ canvas#matrix {
   outline:none;
   text-align:center;
 }
-
-/* Squircle button */
 .custom-btn.btn-squircle {
   width:50px;
   height:50px;
@@ -153,9 +144,7 @@ canvas#matrix {
   font-size:1.2rem;
   transition:0.2s;
 }
-.custom-btn.btn-squircle:hover {
-  transform:scale(1.1);
-}
+.custom-btn.btn-squircle:hover { transform:scale(1.1); }
 
 /* Cursor */
 #custom-cursor {
@@ -178,7 +167,6 @@ canvas#matrix {
 
 <body>
 <canvas id="matrix"></canvas>
-<div class="fog"></div>
 
 <div class="ui">
   <div id="time-display">
@@ -201,7 +189,7 @@ canvas#matrix {
 
   <div class="center-controls">
     <div id="catchphrase">UNBL0CKEDZ0NE | CHRISTMAS 2025 ❄️</div>
-    <div id="quote">You Like Snow Dont You?</div>
+    <div id="quote">Let it snow in the matrix...</div>
 
     <div class="search-container">
       <form id="uv-form" class="search-form" onsubmit="return uvSearch(this);">
@@ -217,7 +205,6 @@ canvas#matrix {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-
   /* MATRIX */
   const canvas = document.getElementById('matrix');
   const ctx = canvas.getContext('2d');
@@ -233,18 +220,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   initMatrix();
   window.addEventListener('resize', initMatrix);
-
-  let lastTime = 0;
-  function matrixLoop(ts) {
-    if(ts - lastTime < 33){ requestAnimationFrame(matrixLoop); return; }
-    lastTime = ts;
-    ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  let lastTime=0;
+  function matrixLoop(ts){
+    if(ts-lastTime<33){requestAnimationFrame(matrixLoop);return;}
+    lastTime=ts;
+    ctx.fillStyle='rgba(0,0,0,0.08)';
     ctx.fillRect(0,0,cw,ch);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle='#fff';
     for(let i=0;i<drops.length;i++){
-      const text = letters.charAt(Math.floor(Math.random()*letters.length));
+      const text=letters.charAt(Math.floor(Math.random()*letters.length));
       ctx.fillText(text,i*fontSize,drops[i]*fontSize);
-      if(drops[i]*fontSize>ch && Math.random()>0.975) drops[i]=0;
+      if(drops[i]*fontSize>ch && Math.random()>0.975)drops[i]=0;
       drops[i]++;
     }
     requestAnimationFrame(matrixLoop);
@@ -252,17 +238,17 @@ document.addEventListener('DOMContentLoaded', () => {
   requestAnimationFrame(matrixLoop);
 
   /* CLOCK */
-  const time24El = document.getElementById('time24');
-  const time12El = document.getElementById('time12');
+  const time24El=document.getElementById('time24');
+  const time12El=document.getElementById('time12');
   function tickClock(){
-    const now = new Date();
-    const hh = String(now.getHours()).padStart(2,'0');
-    const mm = String(now.getMinutes()).padStart(2,'0');
-    const ss = String(now.getSeconds()).padStart(2,'0');
-    time24El.textContent = `${hh}:${mm}:${ss}`;
-    let h12 = now.getHours()%12||12;
-    const ampm = now.getHours()>=12?'PM':'AM';
-    time12El.textContent = `${String(h12).padStart(2,'0')}:${mm}:${ss} ${ampm}`;
+    const now=new Date();
+    const hh=String(now.getHours()).padStart(2,'0');
+    const mm=String(now.getMinutes()).padStart(2,'0');
+    const ss=String(now.getSeconds()).padStart(2,'0');
+    time24El.textContent=`${hh}:${mm}:${ss}`;
+    let h12=now.getHours()%12||12;
+    const ampm=now.getHours()>=12?'PM':'AM';
+    time12El.textContent=`${String(h12).padStart(2,'0')}:${mm}:${ss} ${ampm}`;
   }
   tickClock(); setInterval(tickClock,1000);
 
@@ -283,8 +269,8 @@ document.addEventListener('DOMContentLoaded', () => {
   updateMemory(); setInterval(updateMemory,2000);
 
   /* SIGNATURE */
-  const signatureText = 'Made With Christmas Love By UNBLOCKEDZONE.';
-  const sigEl = document.getElementById('signature-text');
+  const signatureText='Made With Christmas Love By UNBLOCKEDZONE.';
+  const sigEl=document.getElementById('signature-text');
   let si=0;
   function typeSig(){
     if(si<=signatureText.length){
@@ -295,61 +281,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   setTimeout(typeSig,700);
 
-  /* CURSOR */
+  /* CUSTOM CURSOR */
   const cursor=document.getElementById('custom-cursor');
   document.addEventListener('mousemove',e=>{
     cursor.style.left=e.clientX+'px';
     cursor.style.top=e.clientY+'px';
   });
 
-  /* QUOTES */
-  const quotes=[
-    "Let it snow in the matrix...",
-    "Unblocked and festive!",
-    "Snowflakes > ghosts.",
-    "Code jingles all the way.",
-    "Santa sees your browser."
-    "I see you in the camera."
-    "Santa will catch you in your sleep.."
-  ];
-  let qi=0;
-  const quoteEl=document.getElementById('quote');
-  if(quoteEl){ quoteEl.textContent=quotes[0];
-    setInterval(()=>{ qi=(qi+1)%quotes.length; quoteEl.textContent=quotes[qi]; },5000);
-  }
+  /* UV SEARCH */
+  function uvSearch(form){ return false; }
 
-  /* UV SEARCH: Enter key triggers squircle button */
-  const searchInput=document.getElementById('uv-address');
-  searchInput.addEventListener('keypress', e=>{
-    if(e.key==='Enter'){
-      e.preventDefault();
-      const form=searchInput.closest('form');
-      if(form) form.requestSubmit();
-    }
-  });
-
-  /* SNOW PARTICLES */
-  for(let i=0;i<30;i++){
-    const p=document.createElement('div');
-    p.classList.add('particle');
-    p.style.left=Math.random()*100+'vw';
-    p.style.animationDelay=Math.random()*6+'s';
-    document.body.appendChild(p);
-  }
-
-}); // DOMContentLoaded
-
-function uvSearch(form){
-  const input=form.querySelector('#uv-address').value.trim();
-  const engine=form.querySelector('#uv-search-engine').value;
-  if(input){
-    const url=engine.replace('%s',encodeURIComponent(input));
-    window.location.href=url;
-  }
-  return false;
-}
+});
 </script>
 
+<!-- UV Scripts -->
 <script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
 <script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
 <script src="/active/register-sw.js" charset="UTF-8" defer></script>
