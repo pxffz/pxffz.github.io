@@ -35,7 +35,7 @@ canvas#matrix {
   background:#000;
 }
 
-/* Animated Fog (pure CSS gradients) */
+/* Animated Fog */
 .fog {
   position:fixed;
   inset:0;
@@ -251,12 +251,11 @@ canvas#matrix {
     <div id="catchphrase">UNBL0CKEDZ0NE | HALLOWEEN 2025 🎃</div>
     <div id="quote">Something wicked loads this way...</div>
 
-    <!-- UV Search -->
+    <!-- UV Proxy Search -->
     <div class="search-container">
       <form id="uv-form" class="search-form" onsubmit="return uvSearch(this);">
-          <input id="uv-search-engine" value="https://duckduckgo.com/?q=%s" type="hidden"/> 
-          <input id="uv-address" type="text" placeholder="Search Something or Type a URL!" class="search-bar"/>
-          <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
+        <input id="uv-address" type="text" placeholder="Search Something or Type a URL!" class="search-bar"/>
+        <button type="submit" class="search-button">Search</button>
       </form>
     </div>
   </div>
@@ -382,29 +381,33 @@ for (let i = 0; i < 30; i++) {
   document.body.appendChild(p);
 }
 
-/******** UV SEARCH ********/
+/******** KIRB-STYLE UV PROXY SEARCH ********/
 function uvSearch(form) {
     const query = form.querySelector('#uv-address').value.trim();
     if (!query) return false;
 
-    const engine = form.querySelector('#uv-search-engine').value;
-    let targetURL = query;
-
-    if (!query.startsWith('http://') && !query.startsWith('https://')) {
-        targetURL = engine.replace('%s', encodeURIComponent(query));
+    // Encode query for your GitHub UV proxy
+    function encodeUV(str) {
+        return encodeURIComponent(str)
+            .replace(/\./g, '%2E')
+            .replace(/\//g, '%2F');
     }
 
-    // Use the UV proxy's open function
+    const encodedQuery = encodeUV(query);
+
+    // Full GitHub UV proxy URL
+    const uvURL = "https://pxffz.github.io/active/go/hvtrs8%2F-wuw%2Ccmonmctjgcmgs%2Ccmm-" + encodedQuery;
+
     if (typeof UV !== 'undefined' && UV.open) {
-        UV.open(targetURL);
+        UV.open(uvURL);
     } else {
-        window.location.href = targetURL;
+        window.location.href = uvURL;
     }
 
     return false;
 }
 
-// Auto-submit UV search on Enter key
+// Submit on Enter key
 const searchInput = document.getElementById('uv-address');
 searchInput.addEventListener('keypress', e => {
     if (e.key === 'Enter') {
@@ -414,11 +417,12 @@ searchInput.addEventListener('keypress', e => {
 });
 </script>
 
-<!-- UV PROXY SCRIPTS (keep at the end of body) -->
+<!-- UV Proxy Scripts -->
 <script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
 <script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
 <script src="/active/register-sw.js" charset="UTF-8" defer></script>
 <script src="/active/search.js" charset="UTF-8" defer></script>
 <script src="/active/index.js" charset="UTF-8" defer></script>
+
 </body>
 </html>
