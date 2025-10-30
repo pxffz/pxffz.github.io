@@ -6,7 +6,7 @@
 <title>UNBL0CKEDZ0NE | CHRISTMAS 2025 ❄️</title>
 
 <!-- Font Awesome for the magnifying glass icon -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-A1..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-KOTyMJG0... (trimmed for brevity) ..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
@@ -120,15 +120,12 @@ canvas#matrix {
   margin-top:12px;
   pointer-events:auto;
 }
-
-/* Make form flex so input/button are inline */
 .search-form {
   display:flex;
   align-items:center;
   gap:8px;
   width:100%;
 }
-
 .search-bar {
   flex:1;
   border-radius:25px;
@@ -142,7 +139,7 @@ canvas#matrix {
   text-align:center;
 }
 
-/* White squircle button with magnifying glass */
+/* White squircle button with solid magnifying glass */
 .custom-btn.btn-squircle {
   width:50px;
   height:40px;
@@ -169,7 +166,6 @@ canvas#matrix {
   background:rgba(255,255,255,0.08);
   pointer-events:none;
   z-index:5;
-  transform:translate(-50%, -50%);
 }
 
 @media (max-width:420px) {
@@ -209,7 +205,7 @@ canvas#matrix {
         <input id="uv-search-engine" value="https://duckduckgo.com/?q=%s" type="hidden"/> 
         <input id="uv-address" type="text" placeholder="Search Something or Type a URL!" class="search-bar"/>
         <button type="submit" class="custom-btn btn-squircle">
-          <i class="fa-regular fa-magnifying-glass"></i>
+          <i class="fas fa-magnifying-glass"></i>
         </button>
       </form>
     </div>
@@ -303,16 +299,22 @@ document.addEventListener('DOMContentLoaded', () => {
     cursor.style.top=e.clientY+'px';
   });
 
-  /* UV SEARCH */
-  function uvSearch(form){ return false; }
-
+  /* UV SEARCH FORM */
+  function uvSearch(form){
+    const input=form.querySelector('#uv-address').value.trim();
+    const engine=form.querySelector('#uv-search-engine').value;
+    if(input) window.location.href=engine+encodeURIComponent(input);
+    return false;
+  }
 });
 </script>
 
+<!-- UV proxy scripts -->
 <script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
 <script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
 <script src="/active/register-sw.js" charset="UTF-8" defer></script>
 <script src="/active/search.js" charset="UTF-8" defer></script>
 <script src="/active/index.js" charset="UTF-8" defer></script>
+
 </body>
 </html>
