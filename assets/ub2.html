@@ -115,8 +115,13 @@
     #catchphrase { color:var(--accent); font-size:1.4rem; margin-bottom:12px; text-transform:uppercase; }
     #quote { margin-top:8px; font-size:1.05rem; color:#fff; font-style:italic; }
 
-    #search-container { display:flex; justify-content:center; gap:8px; align-items:center; }
-    #search-bar {
+    .search-container {
+      display:flex;
+      justify-content:center;
+      gap:8px;
+      align-items:center;
+    }
+    .search-bar {
       border-radius:25px;
       padding:10px;
       width:320px;
@@ -128,7 +133,7 @@
       outline:none;
       text-align:center;
     }
-    #search-button {
+    .search-button {
       border-radius:12px;
       padding:10px 14px;
       background:var(--accent);
@@ -178,9 +183,14 @@
     <div class="center-controls">
       <div id="catchphrase">UNBL0CKEDZ0NE™ | V3.81</div>
       <div id="quote">What period is this?</div>
-      <div id="search-container">
-        <input id="search-bar" placeholder="SEARCH UNBL0CKEDZ0NE" onkeypress="if(event.key==='Enter') doSearch()" />
-        <button id="search-button" onclick="doSearch()">Search</button>
+
+      <!-- UV Proxy Search Form -->
+      <div class="search-container">
+        <form id="uv-form" class="search-form" onsubmit="return uvSearch(this);">
+          <input id="uv-search-engine" value="https://pxffz.github.io/active/go/hvtr%3A-%2F2.2.2.34-" type="hidden"/> 
+          <input id="uv-address" type="text" placeholder="Search Something or Type a URL!" class="search-bar"/>
+          <button type="submit" class="search-button">Search</button>
+        </form>
       </div>
     </div>
 
@@ -273,12 +283,16 @@
       cursor.style.top = e.clientY + 'px';
     });
 
-    /*********** SEARCH ***********/
-    function doSearch(){
-      const q = document.getElementById('search-bar').value.trim();
-      if(q) window.open(`https://www.google.com/search?q=site:sites.google.com/view/rizz555+${encodeURIComponent(q)}`, '_blank');
+    /*********** UV PROXY SEARCH ***********/
+    function uvSearch(form) {
+        const input = form.querySelector('#uv-address').value.trim();
+        const engine = form.querySelector('#uv-search-engine').value;
+        if(input) {
+            const url = engine + encodeURIComponent(input);
+            window.location.href = url; // opens in same page via UV proxy
+        }
+        return false; // prevent default form submit
     }
-    window.doSearch = doSearch;
 
     /*********** QUOTES ***********/
     const quotes = [
@@ -321,5 +335,12 @@
       quoteEl.textContent = quotes[qi];
     }, 5000);
   </script>
+
+  <!-- UV Scripts -->
+  <script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
+  <script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
+  <script src="/active/register-sw.js" charset="UTF-8" defer></script>
+  <script src="/active/search.js" charset="UTF-8" defer></script>
+  <script src="/active/index.js" charset="UTF-8" defer></script>
 </body>
 </html>
