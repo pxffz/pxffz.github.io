@@ -117,6 +117,15 @@ canvas#matrix {
   margin-top:12px;
   pointer-events:auto;
 }
+
+/* Make form flex so input/button are inline */
+.search-form {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+}
+
 .search-bar {
   flex:1;
   border-radius:25px;
@@ -129,6 +138,7 @@ canvas#matrix {
   outline:none;
   text-align:center;
 }
+
 .custom-btn.btn-squircle {
   width:50px;
   height:50px;
@@ -290,7 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* UV SEARCH */
   function uvSearch(form){ return false; }
-
 });
 </script>
 
