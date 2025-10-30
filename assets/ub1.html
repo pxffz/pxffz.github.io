@@ -251,15 +251,31 @@ canvas#matrix {
     <div id="catchphrase">UNBL0CKEDZ0NE | HALLOWEEN 2025 🎃</div>
     <div id="quote">Something wicked loads this way...</div>
 
-    <!-- New UV search form -->
-    <div class="search-container">
-      <form id="uv-form" class="search-form" onsubmit="return uvSearch(this);">
-          <input id="uv-search-engine" value="https://duckduckgo.com/?q=%s" type="hidden"/> 
-          <input id="uv-address" type="text" placeholder="Search Something or Type a URL!" class="search-bar"/>
-          <button type="submit" class="search-button"><i class="fas fa-search"></i>Search</button>
-      </form>
-    </div>
-  </div>
+<div class="search-container">
+  <form id="uv-form" class="search-form" onsubmit="return uvSearch(this);">
+      <input id="uv-search-engine" value="https://duckduckgo.com/?q=%s" type="hidden"/> 
+      <input id="uv-address" type="text" placeholder="Search Something or Type a URL!" class="search-bar"/>
+      <button type="submit" class="search-button"><i class="fas fa-search"></i>Search</button>
+  </form>
+</div>
+
+<!-- iframe container for embedded results -->
+<div id="uv-frame-container" style="margin-top:16px; width:100%; height:60vh; border:2px solid #ff6600; border-radius:12px; box-shadow:0 0 15px #ff6600;">
+  <iframe id="uv-frame" src="" style="width:100%; height:100%; border:none; border-radius:10px;"></iframe>
+</div>
+
+<script>
+function uvSearch(form) {
+    const query = document.getElementById('uv-address').value.trim();
+    const engine = document.getElementById('uv-search-engine').value;
+    if(query){
+        // Replace %s with query and load in iframe
+        const url = engine.replace('%s', encodeURIComponent(query));
+        document.getElementById('uv-frame').src = url;
+    }
+    return false; // prevent form submission
+}
+</script>
 
   <div id="custom-cursor"></div>
 </div>
