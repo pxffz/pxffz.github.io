@@ -7,37 +7,51 @@
   <link rel="stylesheet" href="/storage/css/styles.css">
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <style>
-    body {
+    body, html {
       margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
       font-family: 'Comfortaa', sans-serif;
       background: #000;
       color: #fff;
       overflow: hidden;
     }
+
+    /* Centered title */
+    #welcome-title {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 32px;
+      text-align: center;
+      transition: opacity 0.5s ease;
+      z-index: 10;
+    }
+
+    /* Search bar at top */
     .search-container {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 999;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      gap: 5px;
+      z-index: 20;
     }
+
     .search-bar {
       padding: 10px;
-      width: 70%;
+      width: 300px;
       border-radius: 10px;
       border: none;
       outline: none;
       font-size: 16px;
     }
+
     .search-button {
       padding: 10px 20px;
-      margin-left: 5px;
       border-radius: 10px;
       border: none;
       cursor: pointer;
@@ -46,29 +60,63 @@
       color: #fff;
       transition: 0.3s;
     }
+
     .search-button:hover {
       background: #155ab6;
     }
+
+    /* iframe takes full space */
     iframe {
       position: fixed;
-      top: 60px; /* height of search bar */
+      top: 0;
       left: 0;
       width: 100vw;
-      height: calc(100vh - 60px);
+      height: 100vh;
       border: none;
+      display: none; /* hidden until user searches */
     }
   </style>
 </head>
 <body>
 
-  <!-- Search Bar -->
+  <!-- Welcome title -->
+  <div id="welcome-title">TYPE SOMETHING IN 💫</div>
+
+  <!-- Search bar -->
   <div class="search-container">
     <input id="uv-address" type="text" placeholder="Search Something or Type a URL!" class="search-bar"/>
     <button class="search-button"><i class="fas fa-search"></i> Search</button>
   </div>
 
   <!-- Main iframe -->
-  <iframe class="tab-iframe active" src="/explore/index.html"></iframe>
+  <iframe class="tab-iframe active"></iframe>
+
+  <script>
+    const searchInput = document.getElementById('uv-address');
+    const searchButton = document.querySelector('.search-button');
+    const iframe = document.querySelector('.tab-iframe.active');
+    const welcomeTitle = document.getElementById('welcome-title');
+
+    function slamURL() {
+      let url = searchInput.value.trim();
+      if (!url) return;
+
+      // Hide welcome title & show iframe
+      welcomeTitle.style.display = 'none';
+      iframe.style.display = 'block';
+
+      const looksLikeURL = /\.[a-z]{2,}(\/|$)/i.test(url);
+      const hasProtocol = /^https?:\/\//i.test(url);
+      if (looksLikeURL && !hasProtocol) url = 'http://' + url;
+
+      iframe.src = `/explore/embed.html?p=${encodeURIComponent(url)}`;
+    }
+
+    searchButton.addEventListener('click', slamURL);
+    searchInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') slamURL();
+    });
+  </script>
 
   <!-- Keep all your proxies and external scripts exactly where you want them (end of body) -->
   <script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
@@ -76,31 +124,6 @@
   <script src="/active/register-sw.js" charset="UTF-8" defer></script>
   <script src="/active/search.js" charset="UTF-8" defer></script>
   <script src="/active/index.js" charset="UTF-8" defer></script>
-
-  <script>
-    // Search button functionality: slam URL/search into iframe
-    const searchInput = document.getElementById('uv-address');
-    const searchButton = document.querySelector('.search-button');
-    const iframe = document.querySelector('.tab-iframe.active');
-
-    searchButton.addEventListener('click', () => {
-      let url = searchInput.value.trim();
-      if (!url) return;
-
-      // Add http:// if it looks like a URL but missing protocol
-      const looksLikeURL = /\.[a-z]{2,}(\/|$)/i.test(url);
-      const hasProtocol = /^https?:\/\//i.test(url);
-      if (looksLikeURL && !hasProtocol) url = 'http://' + url;
-
-      // Slam into iframe using UV proxy
-      iframe.src = `/explore/embed.html?p=${encodeURIComponent(url)}`;
-    });
-
-    // Also allow pressing Enter
-    searchInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter') searchButton.click();
-    });
-  </script>
 
 </body>
 </html>
