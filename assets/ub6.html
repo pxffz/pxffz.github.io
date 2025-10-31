@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>US5 Proxy Browser</title>
+  <link rel="stylesheet" href="/storage/css/styles.css">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Comfortaa', sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+    }
+    .search-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 999;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .search-bar {
+      padding: 10px;
+      width: 70%;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+    .search-button {
+      padding: 10px 20px;
+      margin-left: 5px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      background: #1a73e8;
+      color: #fff;
+      transition: 0.3s;
+    }
+    .search-button:hover {
+      background: #155ab6;
+    }
+    iframe {
+      position: fixed;
+      top: 60px; /* height of search bar */
+      left: 0;
+      width: 100vw;
+      height: calc(100vh - 60px);
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Search Bar -->
+  <div class="search-container">
+    <input id="uv-address" type="text" placeholder="Search Something or Type a URL!" class="search-bar"/>
+    <button class="search-button"><i class="fas fa-search"></i> Search</button>
+  </div>
+
+  <!-- Main iframe -->
+  <iframe class="tab-iframe active" src="/explore/index.html"></iframe>
+
+  <!-- Keep all your proxies and external scripts exactly where you want them (end of body) -->
+  <script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
+  <script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
+  <script src="/active/register-sw.js" charset="UTF-8" defer></script>
+  <script src="/active/search.js" charset="UTF-8" defer></script>
+  <script src="/active/index.js" charset="UTF-8" defer></script>
+
+  <script>
+    // Search button functionality: slam URL/search into iframe
+    const searchInput = document.getElementById('uv-address');
+    const searchButton = document.querySelector('.search-button');
+    const iframe = document.querySelector('.tab-iframe.active');
+
+    searchButton.addEventListener('click', () => {
+      let url = searchInput.value.trim();
+      if (!url) return;
+
+      // Add http:// if it looks like a URL but missing protocol
+      const looksLikeURL = /\.[a-z]{2,}(\/|$)/i.test(url);
+      const hasProtocol = /^https?:\/\//i.test(url);
+      if (looksLikeURL && !hasProtocol) url = 'http://' + url;
+
+      // Slam into iframe using UV proxy
+      iframe.src = `/explore/embed.html?p=${encodeURIComponent(url)}`;
+    });
+
+    // Also allow pressing Enter
+    searchInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') searchButton.click();
+    });
+  </script>
+
+</body>
+</html>
