@@ -66,17 +66,17 @@ canvas#matrix {
   right:16px;
   width:320px;
   background:var(--bg-alpha);
-  border:2px solid var(--accent); /* green outline */
+  border:2px solid var(--accent);
   border-radius:12px;
   padding:14px 16px;
   pointer-events:none;
-  color:var(--accent); /* green text for all stats */
+  color:var(--accent);
 }
 #stats-box h2 {
   margin:0 0 8px 0;
   text-align:center;
-  color:var(--accent); /* green title text */
-  border-bottom:1px solid var(--accent); /* green underline */
+  color:var(--accent);
+  border-bottom:1px solid var(--accent);
   padding-bottom:4px;
 }
 
@@ -104,10 +104,17 @@ canvas#matrix {
 @keyframes blink { 50% { opacity:0; } }
 
 /* Center title & quote */
-.center-controls #catchphrase,
-.center-controls #quote {
-  color:var(--accent);
+.center-controls {
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  z-index:3;
+  pointer-events:auto;
 }
+#catchphrase { color:var(--accent); font-size:1.6rem; margin-bottom:12px; text-transform:uppercase; }
+#quote { color:var(--accent); font-size:1.1rem; margin-top:8px; font-style:italic; }
 
 /* Search Form */
 .search-container {
@@ -136,8 +143,6 @@ canvas#matrix {
   outline:none;
   text-align:center;
 }
-
-/* Button Green with outline */
 .custom-btn.btn-squircle {
   width:50px;
   height:40px;
@@ -154,13 +159,13 @@ canvas#matrix {
 }
 .custom-btn.btn-squircle:hover { transform:scale(1.05); }
 
-/* Cursor */
+/* Custom Cursor Green */
 #custom-cursor {
   position:fixed;
   width:18px;
   height:18px;
   border-radius:50%;
-  border:2px solid #00ff00; /* Green outline */
+  border:2px solid var(--accent);
   background:rgba(0,255,0,0.1);
   pointer-events:none;
   z-index:5;
@@ -196,7 +201,7 @@ canvas#matrix {
 
   <div class="center-controls">
     <div id="catchphrase">UNBLOCKEDZONE | HACK DAY 🟩</div>
-    <div id="quote">Let it snow in the matrix...</div>
+    <div id="quote">It is HACK DAY!</div>
 
     <div class="search-container">
       <form id="uv-form" class="search-form" onsubmit="return uvSearch(this);">
@@ -214,10 +219,10 @@ canvas#matrix {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  /* MATRIX */
   const canvas=document.getElementById('matrix');
   const ctx=canvas.getContext('2d');
   let cw,ch,columns,drops,fontSize=16,letters;
+
   function initMatrix(){
     cw=canvas.width=window.innerWidth;
     ch=canvas.height=window.innerHeight;
@@ -227,8 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
     drops=new Array(columns).fill(1);
     ctx.font=fontSize+'px monospace';
   }
+
   initMatrix();
   window.addEventListener('resize',initMatrix);
+
   let lastTime=0;
   function matrixLoop(ts){
     if(ts-lastTime<33){requestAnimationFrame(matrixLoop);return;}
