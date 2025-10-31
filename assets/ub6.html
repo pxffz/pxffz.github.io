@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UPD💫</title>
+  <title>TYPE SOMETHING IN 💫</title>
   <style>
     body, html {
       margin: 0;
@@ -54,13 +54,6 @@
     .search-button:hover {
       background-color: #00cc00;
     }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: none;
-    }
   </style>
 </head>
 <body>
@@ -69,37 +62,30 @@
     <input type="text" id="search-input" class="search-bar" placeholder="Type a URL or search term...">
     <button class="search-button" id="search-btn">Search</button>
   </div>
-  <iframe id="result-frame"></iframe>
 
   <script>
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
-    const iframe = document.getElementById('result-frame');
     const title = document.getElementById('main-title');
 
-    searchBtn.addEventListener('click', () => {
+    function goToProxiedUrl() {
       let url = searchInput.value.trim();
       if (!url) return;
 
-      // If it doesn't start with http/https, treat it as a search query
       if (!/^https?:\/\//i.test(url)) {
         url = 'https://duckduckgo.com/?q=' + encodeURIComponent(url);
       }
 
-      // Apply proxy
+      // Use the proxy URL
       const proxied = 'https://pxffz.github.io/active/go/hvtrs?url=' + encodeURIComponent(url);
 
-      // Hide title and search bar
-      title.style.display = 'none';
-      document.querySelector('.search-container').style.display = 'none';
+      // Navigate to new "page" (same tab) but using proxied URL
+      window.location.href = proxied;
+    }
 
-      // Load iframe
-      iframe.src = proxied;
-      iframe.style.display = 'block';
-    });
-
+    searchBtn.addEventListener('click', goToProxiedUrl);
     searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') searchBtn.click();
+      if (e.key === 'Enter') goToProxiedUrl();
     });
   </script>
 
