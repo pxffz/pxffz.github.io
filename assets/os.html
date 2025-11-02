@@ -18,7 +18,7 @@
 
   /* Taskbar */
   .taskbar {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
@@ -42,7 +42,7 @@
 
   /* Settings Window */
   .settings-window {
-    position: absolute;
+    position: fixed;
     bottom: 60px;
     left: 20px;
     width: 300px;
@@ -77,25 +77,16 @@
     border-radius: 5px;
     cursor: pointer;
   }
-
-  iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
 </style>
 </head>
 <body>
 
-<iframe id="proxyFrame" src="https://example.com"></iframe>
-
+<!-- Taskbar -->
 <div class="taskbar">
   <button id="settingsBtn"><i class="fa-solid fa-circle-user" style="color: #b000e0;"></i></button>
 </div>
 
+<!-- Settings Window -->
 <div class="settings-window" id="settingsWindow">
   <h3>Settings</h3>
   <div class="category">
@@ -108,36 +99,32 @@
 <script>
   const settingsBtn = document.getElementById('settingsBtn');
   const settingsWindow = document.getElementById('settingsWindow');
-  const iframe = document.getElementById('proxyFrame');
 
   // Toggle settings window
   settingsBtn.addEventListener('click', () => {
     settingsWindow.style.display = settingsWindow.style.display === 'block' ? 'none' : 'block';
   });
 
-  // Cloak functionality
-  function openCloak(type) {
-    const currentURL = iframe.src;
-    if (!currentURL) return;
+  function cloak(type) {
+    const oldURL = window.location.href;
 
     if (type === 'about') {
-      // Change current iframe to clever.com
-      iframe.src = 'https://www.clever.com/';
-      // Open a new tab with original URL
-      window.open(currentURL, '_blank');
+      // Change current tab to clever.com
+      window.location.href = 'https://www.clever.com/';
+      // Open a new tab with the old URL
+      window.open(oldURL, '_blank');
     }
 
     if (type === 'blob') {
-      // Change current iframe to a blob URL version
-      const blobURL = `blob:${currentURL}`;
-      iframe.src = blobURL;
-      // Open a new tab with original URL
-      window.open(currentURL, '_blank');
+      // Change current tab to blob URL
+      window.location.href = `blob:${oldURL}`;
+      // Open a new tab with the old URL
+      window.open(oldURL, '_blank');
     }
   }
 
-  document.getElementById('cloakAbout').addEventListener('click', () => openCloak('about'));
-  document.getElementById('cloakBlob').addEventListener('click', () => openCloak('blob'));
+  document.getElementById('cloakAbout').addEventListener('click', () => cloak('about'));
+  document.getElementById('cloakBlob').addEventListener('click', () => cloak('blob'));
 </script>
 
 </body>
