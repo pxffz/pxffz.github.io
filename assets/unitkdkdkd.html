@@ -4,11 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>UNBL0CKEDZ0NE</title>
-
-<!--- 
-  IF YOU ARE HERE TRYING TO STEAL THE FUCKING HTML, JUST KNOW.. I AM WATCHING YOU.. YOU DICKHEADED SKIDS.
-  NEVER EVER CHECK MY FUCKIN HTML DAWG! IT IS MINES NOW. I UPDATED CHANGES YOU BEANHEAD DICKSUCKER
---->
+<!--- 00 UNBLOCKEDZONE COPIED SHIT! --->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
 
@@ -38,6 +34,7 @@ canvas#matrix {
   background:#000;
 }
 
+/* Notice */
 .notice {
   position: fixed;
   top: 10px;
@@ -64,6 +61,7 @@ canvas#matrix {
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
+/* UI Elements */
 .ui {
   position:fixed;
   inset:0;
@@ -83,11 +81,7 @@ canvas#matrix {
   text-align:right;
   pointer-events:none;
 }
-
-#time24, #time12 {
-  display:block;
-  color:var(--accent);
-}
+#time24, #time12 { display:block; color:var(--accent); }
 
 #stats-box {
   position:fixed;
@@ -156,6 +150,7 @@ canvas#matrix {
   text-shadow:0 0 12px #ff3300;
 }
 
+/* Search Bar */
 #search-container {
   display:flex;
   justify-content:center;
@@ -188,24 +183,13 @@ canvas#matrix {
 }
 #search-button:hover {
   background:#ffa64d;
-  box-shadow:var(--glow);
+  box-shadow:0 0 20px #ff6600, 0 0 35px #ff3300;
   transform:scale(1.1);
 }
 
-.particle {
-  position:fixed;
-  width:4px;
-  height:4px;
-  background:#ff6600;
-  border-radius:50%;
-  opacity:0.6;
-  animation:floatParticle 6s linear infinite;
-}
-@keyframes floatParticle {
-  0% { transform:translateY(100vh) translateX(0); opacity:0.1; }
-  50% { opacity:0.9; }
-  100% { transform:translateY(-20vh) translateX(20px); opacity:0; }
-}
+/* Particles & Cursor */
+.particle { position:fixed; width:4px; height:4px; background:#ff6600; border-radius:50%; opacity:0.6; animation:floatParticle 6s linear infinite; }
+@keyframes floatParticle { 0% { transform:translateY(100vh) translateX(0); opacity:0.1; } 50% { opacity:0.9; } 100% { transform:translateY(-20vh) translateX(20px); opacity:0; } }
 
 #custom-cursor {
   position:fixed;
@@ -220,17 +204,13 @@ canvas#matrix {
   box-shadow:0 0 20px #ff6600;
   animation:pulse 1s infinite alternate;
 }
-@keyframes pulse {
-  from { transform:translate(-50%,-50%) scale(1); opacity:1; }
-  to { transform:translate(-50%,-50%) scale(1.4); opacity:0.6; }
-}
+@keyframes pulse { from { transform:translate(-50%,-50%) scale(1); opacity:1; } to { transform:translate(-50%,-50%) scale(1.4); opacity:0.6; } }
 
 #social-row {
   position: fixed;
   bottom: 20px;
   left: 20px;
   display: flex;
-  flex-direction: row;
   gap: 12px;
   z-index: 15;
 }
@@ -257,7 +237,6 @@ canvas#matrix {
 </head>
 
 <body>
-
 <!-- UV proxy scripts -->
 <script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
 <script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
@@ -294,15 +273,14 @@ canvas#matrix {
     <div id="catchphrase">UNBL0CKEDZ0NE 👾</div>
     <div id="quote">I know when you use other websites...</div>
 
-    <!-- Updated Search Bar -->
+    <!-- Search Form -->
     <div class="search-container">
       <form id="uv-form" class="search-form" onsubmit="return uvSearch(this);">
         <input id="uv-search-engine" value="https://duckduckgo.com/?q=%s" type="hidden"/> 
         <input id="uv-address" type="text" placeholder="Search for G4mes! V3.82" class="search-bar"/>
-        <button type="submit" class="custom-btn btn-squircle">Search</button>
+        <button type="submit" id="search-button">Search</button>
       </form>
     </div>
-
   </div>
 
   <div id="custom-cursor"></div>
@@ -315,7 +293,7 @@ canvas#matrix {
 </div>
 
 <script>
-// MATRIX
+// MATRIX EFFECT
 const canvas = document.getElementById('matrix');
 const ctx = canvas.getContext('2d');
 let cw, ch, columns, drops, fontSize = 16, letters;
@@ -330,6 +308,7 @@ function initMatrix() {
 }
 initMatrix();
 window.addEventListener('resize', initMatrix);
+
 let lastTime = 0;
 function matrixLoop(ts) {
   if (ts - lastTime < 33) { requestAnimationFrame(matrixLoop); return; }
@@ -362,7 +341,7 @@ function tickClock(){
 }
 tickClock(); setInterval(tickClock,1000);
 
-// SYSTEM STATS
+// SYSTEM INFO
 document.getElementById('screen-size').textContent = `${window.screen.width}x${window.screen.height}`;
 document.getElementById('browser').textContent = navigator.userAgent.split(') ')[1] || navigator.userAgent;
 document.getElementById('platform').textContent = navigator.platform || 'Unknown';
@@ -378,7 +357,7 @@ function updateMemory(){
 }
 updateMemory(); setInterval(updateMemory, 2000);
 
-// SIGNATURE
+// SIGNATURE TYPING
 const signatureText = 'Made by a dude with a laptop.';
 const sigEl = document.getElementById('signature-text');
 let si = 0;
@@ -391,7 +370,7 @@ function typeSig(){
 }
 setTimeout(typeSig, 700);
 
-// CURSOR
+// CUSTOM CURSOR
 const cursor = document.getElementById('custom-cursor');
 document.addEventListener('mousemove', e => {
   cursor.style.left = e.clientX + 'px';
@@ -426,17 +405,12 @@ for (let i = 0; i < 30; i++) {
   p.style.animationDelay = Math.random() * 6 + 's';
   document.body.appendChild(p);
 }
-
-// UV Search
-function uvSearch(form) {
-  const query = form.querySelector('#uv-address').value.trim();
-  if (!query) return false;
-  const engine = form.querySelector('#uv-search-engine').value;
-  const url = engine.replace('%s', encodeURIComponent(query));
-  window.open(url, '_blank');
-  return false;
-}
-</script>
+// UV PROXY SCRIPTS
+<script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
+<script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
+<script src="/active/register-sw.js" charset="UTF-8" defer></script>
+<script src="/active/search.js" charset="UTF-8" defer></script>
+<script src="/active/index.js" charset="UTF-8" defer></script>
 
 </body>
 </html>
