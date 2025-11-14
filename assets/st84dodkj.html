@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--- 
+  CODE SHOULD BE WORKING NOW YOU FUCKWIT! NOW NOTHING IS IMPOSSIBLE. NO, THIS WEB WOULD OBVIOUSLY NOT GET BANNED!
+--->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Files Grid</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; margin: 0; }
+  #sidebar { width: 50px; background: #222; color: #fff; display: flex; flex-direction: column; align-items: center; padding: 10px; }
+  .sidebar-btn { margin: 2px 0; width: 30px; height: 30px; background: #444; color: #fff; border: none; cursor: pointer; }
+  .sidebar-btn.empty { background: #111; cursor: default; opacity: 0.4; }
+  #sections-container { flex: 1; padding: 20px; overflow-y: auto; max-height: 100vh; }
+  .letter-section { margin-bottom: 40px; }
+  .letter-header { font-size: 24px; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+  .buttons-container { display: flex; flex-wrap: wrap; gap: 5px; }
+  .buttons-container input[type="button"] { padding: 5px 10px; cursor: pointer; }
+  .empty-message { color: #888; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div id="sidebar"></div>
+<div id="sections-container"></div>
+
+<script>
+const files = [
+  'clstickminfleecomplex','clstickrpgcomplete','clstickslasher','clstickwar','clstickwar2',
+  'clstormthehouse','clstormthehouse3','clstrangejournet','clstreangeropepolice','clstreetfighter2',
+  'clstreetfighter2turbo','clstreetfighteralpha3','clstreetofrage','clstreetofrage2','clstreetofrage3',
+  'clstrikeforceheroes','clstrikeforceheroes2','clstrikeforceheroes3','clstylesavvy','clsubwaysurfersbarcelona',
+  'clsubwaysurfersbeijing','clsubwaysurfersberlin','clsubwaysurfersbuenosaires','clsubwaysurfershavana',
+  'clsubwaysurfershouston','clsubwaysurfersiceland','clsubwaysurferslondon','clsubwaysurfersmexico',
+  'clsubwaysurfersmiami','clsubwaysurfersmonaco','clsubwaysurfersneworleans','clsubwaysurferssanfrancisco(1)',
+  'clsubwaysurferssanfrancisco','clsubwaysurfersstpetersburg','clsubwaysurferswinterholiday','clsubwaysurferszurich',
+  'clsugarsugar','clsuika','clsuikapico','clsunandmoon','clsuperbomberman','clsuperbomberman2','clsuperbomberman3',
+  'clsuperbomberman4','clsuperbomberman5','clsupercarrush','clsupercastlevaniaVI','clsuperchibiknight',
+  'clsuperdarkdeception','clsuperdiagonalmario2','clsuperfighters','clsuperhot','clsuperhotlinemiami',
+  'clsuperhouseofdeadninjas','clsuperliquidsoccer','clsupermario','clsupermario63','clsupermario64',
+  'clsupermario64ds','clsupermarioallstars','clsupermariobros','clsupermariobros2','clsupermariobros2us',
+  'clsupermariobros3','clsupermariobros3real','clsupermariokart','clsupermarioland','clsupermarioland2',
+  'clsupermariorpg','clsupermarioworld','clsupermarioworld2','clSuperMarioWorldThe SecretOfThe7GoldenStatues',
+  'clsupermetroid','clsupermonkeyballjr','clsupernoahsark3D','clsuperoliverworld','clsuperpunchout',
+  'clsuperpuzzlefighter2turbo','clsuperpuzzlefighter2turboalt','clsuperscribblenauts','clsuperslandadventure',
+  'clsupersmashbros','clsupersmashflash','clsupersmashflash2','clsupersmashflash2butdifversion','clsupertiltbros',
+  'clsupitdept','clsupremeduelist','clsurvevio','clsurvivalracev2','clsushicat','clsushicat2','clsushiunroll',
+  'clswerve','clswitchblade','clswordandshieldultimateplus','clswordfight','clswordplay','clswordsandsandals',
+  'clswordsandsandals2','clswordsandsouls','clsydneyshark','cltabletanks','cltabletennisworldtour','cltag',
+  'cltag3','clTaikonoTatsujin','cltaisei','cltakeover','cltallmanrun','cltankmayhem','cltankpixel','cltanukisunset',
+  'cltanukisunsetuhhhhhhhh','cltapper','cltaproad','cltastyplanet','cltboilambeternal','cltecmobowl','cltelephonetrouble',
+  'cltelocation','cltempest2000','cltempleofboom','cltemplerun2','cltempoverdose','clterra','clterritorialio',
+  'clterritorywar','cltetris','cltetrisattack','cltetrisgba','clthanksforremindingmeihadtofixthis','cltheclassroom',
+  'cltheclassroom2','cltheclassroom3','clthedeadseat','clthedeepestsleep','cltheenchantedcave2','cltheimpossiblegame',
+  'clthelaststand','clthelaststandunioncity (1)','clthelaststandunioncity','clthemaninthewindow','clthemepark',
+  'clthepit','clthereisnofile','clthermomorph','clthisistheonlylevel','clthisistheonlylevel2','clthisistheonlyleveltoo',
+  'clthreegoblets','clthrowapotato','clthrowapotatoagain','clthwack','cltimeshooter2','cltimeshooter3','cltimewarriors',
+  'cltinyfishing','cltmnt','cltoastarling','cltoasterball','cltombofthemask','cltombofthemass','cltomodachicollection',
+  'cltonyhawkproskater','cltonyhawkskater2','cltonyhawkskater4','cltonyhawksunderground','cltoomanytypes',
+  'cltopspeedracing3d','cltosstheturtle','cltotm','cltowerblocks','cltowercrash3d','cltrace','cltrafficjam3d',
+  'cltrapthecat','cltrechoroustrials','cltripleplay2000','cltriviacrack','cltrollfacequest1','cltrollfacequest10',
+  'cltrollfacequest11','cltrollfacequest12','cltrollfacequest13','cltrollfacequest2','cltrollfacequest3',
+  'cltrollfacequest4','cltrollfacequest5','cltrollfacequest6','cltrollfacequest7','cltrollfacequest8',
+  'cltrollfacequest9','cltrucksim','cltubejumpers','cltunnelrush','cltunnelrushbetter','clturbostars',
+  'clturokdinosaurhunter','cltwistedmetal','cltwistedmetal2','cltwoball3d','clucds','cluckyblockobbyEUOPHRATESRIVER',
+  'clufoswampoddysey','clultimateassassian2','clultimateassassian3','clUltimatecardrivingsimulator','clultimatemortalkombat',
+  'clultimatemortalkombat3','clultrakill','clumstickmangameidkiforgor','cluncannycatgolf','clunderneath',
+  'clundertaler','clundertaleyellow','clunfairmario','clunfairmarioworkquestionmark','clunfairundyne','clunicyclehero',
+  'cluno','clupgradecomplete','clupgradecomplete2','clupslash','clUZG','clvampiresurvivors','clvanguard','clvaportrails',
+  'clvermhole','clvex','clvex2','clvex3','clvex3xmas','clvex4','clvex5','clvex6','clvex7','clvex8','clvexchallenges',
+  'clvexx3m','clvexx3m2','clvillager','clvolleyrandom','clvollyballchallenge','clvvvvvv','clwaluigitacostand',
+  'clwarfare1944','clwarioland4','clwariowarediy','clwariowareinc','clwartheknight','clwaterpoolio','clwavedash',
+  'clwaverace64','clwaverun','clwebecomewhatwebehold','clwebfishing','clweltling','clwhackthetheif','clwhackyourboss',
+  'clwhackyourcomputer','clwheely','clwheely2','clwheely3','clwheely4','clwheely5','clwheely6','clwheely7','clwheely8',
+  'clwindowsdoors','clwinterfalling','clwipeout2097','clwipeout2097alt','clwitchcrafttd','clwolfenstein','clwolfenstein3d',
+  'clwoodworm','clwordle','clworldcup98','clworldshardestgame','clworldshardestgame2','clworldshardestgame3',
+  'clworldshardestgame4','clwrassling','clwrestlebros','clXevious','clyanderesimulator','clyarsrevenge','clyellow',
+  'clYoshisStrangeQuest','clyouarelucky','clyouvs100skibidi','clyumenikki','clzelda2thelegendoflink','clzeldaminishcap',
+  'clzenword','clzombieexploder','clzombieroad','clzombiesatemyneighboors','clzombopaclypse2','clzombotron','clzombotron2',
+  'clzombotronreboot','clzrist','clzuma','clzumashooter','clÖoo','Dragonxclient','Eaglercraft-Alpha-1.2.6-Offline',
+  'Eaglercraft-Beta-1.3-Offline','Eaglercraft-Indev-Offline (1)','Eaglercraft-Indev-Offline','eaglercraft.1.5.2',
+  'EaglercraftL_1.9_v0_7_0_Offline_Signed','EaglercraftX 1.8.8(u29)','EaglercraftZ_1.11.2','marbleracer','mariobuilder64',
+  'Minceraft-I-NotMine_V6','mortalkombat4','polytrackbutnotflagged','rocketknight2','sandstone','snowbros',
+  'superdromebugs','vvvvvv','wilywars'
+];
+
+function generateAllSections() {
+  const allChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const filesByChar = {};
+  allChars.forEach(c => filesByChar[c] = []);
+
+  files.forEach(f => {
+    const lower = f.toLowerCase();
+    if (lower.startsWith('cl')) {
+      const first = lower[2]?.toUpperCase();
+      if (filesByChar[first]) filesByChar[first].push(f);
+    }
+  });
+
+  const container = document.getElementById('sections-container');
+  container.innerHTML = '';
+  allChars.forEach(c => {
+    const sec = document.createElement('div');
+    sec.className = 'letter-section';
+    sec.id = `section-${c}`;
+
+    const header = document.createElement('div');
+    header.className = 'letter-header';
+    header.textContent = c;
+    sec.appendChild(header);
+
+    const buttons = document.createElement('div');
+    buttons.className = 'buttons-container';
+
+    if (filesByChar[c].length) {
+      filesByChar[c].forEach(f => {
+        const btn = document.createElement('input');
+        btn.type = 'button';
+        btn.value = f;
+        btn.onclick = () => {
+          fetch(`https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile/${f}.html?t=${Date.now()}`)
+            .then(r => r.text())
+            .then(t => {
+              const w = window.open("about:blank", "_blank");
+              if (w) { w.document.open(); w.document.write(t); w.document.close(); }
+            })
+            .catch(e => alert("Failed to load file: " + f));
+        };
+        buttons.appendChild(btn);
+      });
+    } else {
+      const msg = document.createElement('div');
+      msg.className = 'empty-message';
+      msg.textContent = 'No files';
+      buttons.appendChild(msg);
+    }
+    sec.appendChild(buttons);
+    container.appendChild(sec);
+  });
+
+  generateSidebar(allChars, filesByChar);
+}
+
+function generateSidebar(chars, filesByChar) {
+  const bar = document.getElementById('sidebar');
+  bar.innerHTML = '';
+  chars.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'sidebar-btn';
+    b.textContent = c;
+    if (filesByChar[c].length) {
+      b.onclick = () => document.getElementById(`section-${c}`).scrollIntoView({ behavior: 'smooth' });
+    } else {
+      b.classList.add('empty');
+    }
+    bar.appendChild(b);
+  });
+}
+
+window.addEventListener('DOMContentLoaded', generateAllSections);
+</script>
+
+</body>
+</html>
