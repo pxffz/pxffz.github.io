@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
+<!--- 
+    THIS IS OWNED BY UB GAMES! WHY ARE YOU SNOOPIN AROUND HERE YA NERD?
+--->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UB GAMES Proxy</title>
@@ -112,6 +115,14 @@
     <button type="submit" class="search-button">Search</button>
   </form>
 </div>
+
+<!-- Dummy uvSearch function so UV scripts can intercept -->
+<script>
+  function uvSearch(form) {
+    // keep this empty — UV scripts will handle the submission
+    return false;
+  }
+</script>
 
 <div class="clock" id="clock"></div>
 
