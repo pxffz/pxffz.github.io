@@ -105,9 +105,10 @@
     <label>Volume: <input type="range" id="volume" max="1000" value="500"></label>
     <label>Bass: <input type="range" id="bass" max="1000" value="500"></label>
     <div class="playlist" id="playlist">
-        <div data-src="https://dl.dropboxusercontent.com/scl/fi/d84yhtuwmqfc6un2txra8/SOL-VIBRA-DJ-Zarek.mp3?rlkey=9n0l6anvkcjgu7p40sfk3xe5w&st=f3h37dcx&dl=0">SOL VIBRA - DJ ZAREK</div>
-        <div data-src="https://dl.dropboxusercontent.com/scl/fi/eq568e6zq1swe136rycfu/Slide-da-Treme-Mel-dica-v2-Ultra-Slowed-DJ-FNK-The-Vibe-Guide.mp3?rlkey=i4gvilctwu48775jnnzp95jrd&st=fuggkxe7&dl=0">Slide Da Treme Melodica V2 - DJ FNK</div>
-        <div data-src="https://dl.dropboxusercontent.com/scl/fi/ec3oyejudh35mfgw7lxrg/GROW-A-GARDEN-FUNK-SHX4-x-SXYGX-x-FYU-RioX.mp3?rlkey=bdc2jyf5z2jfzrpi99p3a1zg4&st=ve0ieo72&dl=0">Grow A Garden Funk - SHX4</div>
+        <!-- Add more songs by copying the div below and changing data-src and text -->
+        <div data-src="https://dl.dropboxusercontent.com/scl/fi/ec3oyejudh35mfgw7lxrg/GROW-A-GARDEN-FUNK-SHX4-x-SXYGX-x-FYU-RioX.mp3?rlkey=bdc2jyf5z2jfzrpi99p3a1zg4&st=ve0ieo72&dl=0">GROW A GARDEN FUNK - SHX0</div>
+        <div data-src="https://dl.dropboxusercontent.com/scl/fi/3r46mi8q50c904bh6ntoq/NO-ERA-AMOR-Extended-SUKA..mp3?rlkey=r5tybhzqa8y2us1ef8czrb9oz&st=d5zsgr4z&dl=0">NO ERA MOR - suka</div>
+        <div data-src="https://dl.dropboxusercontent.com/scl/fi/d84yhtuwmqfc6un2txra8/SOL-VIBRA-DJ-Zarek.mp3?rlkey=9n0l6anvkcjgu7p40sfk3xe5w&st=sgks981z&dl=0">SOL VIBRA - DJ ZAREK</div>
     </div>
 </div>
 
@@ -115,6 +116,18 @@
 const audio = new Audio();
 let currentSongIndex = -1;
 let repeat = false;
+
+function fixDropboxLink(url){
+    // Convert Dropbox shared link to direct download link
+    if(url.includes('dropbox.com') && !url.includes('?raw=1')){
+        if(url.includes('?dl=0') || url.includes('?dl=1')){
+            url = url.replace('?dl=0','?raw=1').replace('?dl=1','?raw=1');
+        } else {
+            url += '?raw=1';
+        }
+    }
+    return url;
+}
 
 function refreshPlaylist() {
     const playlistDivs = document.querySelectorAll('#playlist div');
@@ -133,7 +146,7 @@ const repeaterBtn = document.getElementById('repeater');
 function playSong(index){
     if(currentSongIndex !== -1) playlistDivs[currentSongIndex].classList.remove('active-song');
     currentSongIndex = index;
-    audio.src = playlistDivs[index].dataset.src;
+    audio.src = fixDropboxLink(playlistDivs[index].dataset.src);
     playlistDivs[index].classList.add('active-song');
     audio.play();
     playpauseBtn.textContent = '⏸️';
