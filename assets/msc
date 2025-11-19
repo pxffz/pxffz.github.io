@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epic Black & White Music Player</title>
+<style>
+    body {
+        margin: 0;
+        background: black;
+        font-family: 'Courier New', monospace;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .player {
+        margin-top: 20px;
+        background: #111;
+        border: 2px solid white;
+        border-radius: 15px;
+        padding: 20px;
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 0 0 15px rgba(255,255,255,0.3);
+    }
+
+    .controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        width: 100%;
+        margin-top: 15px;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    button {
+        background: black;
+        border: 2px solid white;
+        color: white;
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.2s ease;
+    }
+
+    button:hover {
+        box-shadow: 0 0 10px white;
+    }
+
+    #repeater.active {
+        background: white;
+        color: black;
+    }
+
+    input[type=range] {
+        width: 95%;
+        margin-top: 10px;
+    }
+
+    .playlist {
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .playlist div {
+        padding: 8px;
+        border-bottom: 1px solid white;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .playlist div:hover, .playlist .active-song {
+        background: rgba(255,255,255,0.2);
+    }
+
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+</style>
+</head>
+<body>
+<canvas id="visualizer"></canvas>
+<div class="player">
+    <h2>Epic Music Player</h2>
+    <div class="controls">
+        <button id="back5">⏪</button>
+        <button id="playpause">▶️</button>
+        <button id="forward5">⏩</button>
+        <button id="speedDown">-5 Speed</button>
+        <button id="speedUp">+5 Speed</button>
+        <button id="repeater">🔁</button>
+    </div>
+    <label>Volume: <input type="range" id="volume" max="1000" value="500"></label>
+    <label>Bass: <input type="range" id="bass" max="1000" value="500"></label>
+    <div class="playlist" id="playlist">
+        <div data-src="https://dl.dropboxusercontent.com/scl/fi/d84yhtuwmqfc6un2txra8/SOL-VIBRA-DJ-Zarek.mp3?rlkey=9n0l6anvkcjgu7p40sfk3xe5w&st=f3h37dcx&dl=0">SOL VIBRA - DJ ZAREK</div>
+        <div data-src="https://dl.dropboxusercontent.com/scl/fi/eq568e6zq1swe136rycfu/Slide-da-Treme-Mel-dica-v2-Ultra-Slowed-DJ-FNK-The-Vibe-Guide.mp3?rlkey=i4gvilctwu48775jnnzp95jrd&st=fuggkxe7&dl=0">Slide Da Treme Melodica V2 - DJ FNK</div>
+        <div data-src="https://dl.dropboxusercontent.com/scl/fi/ec3oyejudh35mfgw7lxrg/GROW-A-GARDEN-FUNK-SHX4-x-SXYGX-x-FYU-RioX.mp3?rlkey=bdc2jyf5z2jfzrpi99p3a1zg4&st=ve0ieo72&dl=0">Grow A Garden Funk - SHX4</div>
+    </div>
+</div>
+
+<script>
+const audio = new Audio();
+let currentSongIndex = -1;
+let repeat = false;
+
+function refreshPlaylist() {
+    const playlistDivs = document.querySelectorAll('#playlist div');
+    playlistDivs.forEach((div,i)=>{
+        div.onclick = ()=>{
+            playSong(i);
+        };
+    });
+    return playlistDivs;
+}
+
+let playlistDivs = refreshPlaylist();
+const playpauseBtn = document.getElementById('playpause');
+const repeaterBtn = document.getElementById('repeater');
+
+function playSong(index){
+    if(currentSongIndex !== -1) playlistDivs[currentSongIndex].classList.remove('active-song');
+    currentSongIndex = index;
+    audio.src = playlistDivs[index].dataset.src;
+    playlistDivs[index].classList.add('active-song');
+    audio.play();
+    playpauseBtn.textContent = '⏸️';
+}
+
+playpauseBtn.addEventListener('click',()=>{
+    if(audio.paused) {
+        audio.play();
+        playpauseBtn.textContent = '⏸️';
+    } else {
+        audio.pause();
+        playpauseBtn.textContent = '▶️';
+    }
+});
+
+repeaterBtn.addEventListener('click',()=>{
+    repeat = !repeat;
+    repeaterBtn.classList.toggle('active', repeat);
+});
+
+document.getElementById('forward5').addEventListener('click',()=>{
+    audio.currentTime += 5;
+});
+document.getElementById('back5').addEventListener('click',()=>{
+    audio.currentTime -= 5;
+});
+
+document.getElementById('speedUp').addEventListener('click',()=>{
+    audio.playbackRate = Math.min(audio.playbackRate + 0.05, 3);
+});
+document.getElementById('speedDown').addEventListener('click',()=>{
+    audio.playbackRate = Math.max(audio.playbackRate - 0.05, 0.1);
+});
+
+const volumeSlider = document.getElementById('volume');
+const bassSlider = document.getElementById('bass');
+
+volumeSlider.addEventListener('input',(e)=>{
+    audio.volume = e.target.value/1000;
+});
+
+bassSlider.addEventListener('input',(e)=>{
+    bassGain.gain.value = e.target.value/1000;
+});
+
+// Visualizer setup
+const canvas = document.getElementById('visualizer');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const analyser = audioCtx.createAnalyser();
+const source = audioCtx.createMediaElementSource(audio);
+const bassGain = audioCtx.createGain();
+
+source.connect(bassGain);
+bassGain.connect(analyser);
+analyser.connect(audioCtx.destination);
+
+analyser.fftSize = 256;
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
+
+function draw(){
+    requestAnimationFrame(draw);
+    analyser.getByteFrequencyData(dataArray);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    const barWidth = (canvas.width / bufferLength) * 2.5;
+    let x = 0;
+    for(let i=0;i<bufferLength;i++){
+        const barHeight = dataArray[i]*1.5;
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.fillRect(x, canvas.height-barHeight, barWidth, barHeight);
+        x += barWidth + 1;
+    }
+}
+draw();
+
+audio.addEventListener('ended',()=>{
+    if(repeat) audio.currentTime = 0, audio.play();
+    else {
+        let next = (currentSongIndex+1)%playlistDivs.length;
+        playSong(next);
+    }
+});
+
+function addSong(title, url){
+    const playlist = document.getElementById('playlist');
+    const newDiv = document.createElement('div');
+    newDiv.dataset.src = url;
+    newDiv.textContent = title;
+    playlist.appendChild(newDiv);
+    playlistDivs = refreshPlaylist();
+}
+
+window.addEventListener('resize',()=>{
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
+</body>
+</html>
