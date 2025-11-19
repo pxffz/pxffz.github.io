@@ -105,10 +105,10 @@
     <label>Volume: <input type="range" id="volume" max="1000" value="500"></label>
     <label>Bass: <input type="range" id="bass" max="1000" value="500"></label>
     <div class="playlist" id="playlist">
-        <!-- Add more songs by copying the div below and changing data-src and text -->
-        <div data-src="https://dl.dropboxusercontent.com/scl/fi/ec3oyejudh35mfgw7lxrg/GROW-A-GARDEN-FUNK-SHX4-x-SXYGX-x-FYU-RioX.mp3?rlkey=bdc2jyf5z2jfzrpi99p3a1zg4&st=ve0ieo72&dl=0">GROW A GARDEN FUNK - SHX0</div>
-        <div data-src="https://dl.dropboxusercontent.com/scl/fi/3r46mi8q50c904bh6ntoq/NO-ERA-AMOR-Extended-SUKA..mp3?rlkey=r5tybhzqa8y2us1ef8czrb9oz&st=d5zsgr4z&dl=0">NO ERA MOR - suka</div>
-        <div data-src="https://dl.dropboxusercontent.com/scl/fi/d84yhtuwmqfc6un2txra8/SOL-VIBRA-DJ-Zarek.mp3?rlkey=9n0l6anvkcjgu7p40sfk3xe5w&st=sgks981z&dl=0">SOL VIBRA - DJ ZAREK</div>
+        <!-- Playlist remains the same -->
+        <div data-src="https://dl.dropboxusercontent.com/s/ec3oyejudh35mfgw7lxrg/GROW-A-GARDEN-FUNK-SHX4-x-SXYGX-x-FYU-RioX.mp3?raw=1">GROW A GARDEN FUNK - SHX0</div>
+        <div data-src="https://dl.dropboxusercontent.com/s/3r46mi8q50c904bh6ntoq/NO-ERA-AMOR-Extended-SUKA.mp3?raw=1">NO ERA MOR - suka</div>
+        <div data-src="https://dl.dropboxusercontent.com/s/d84yhtuwmqfc6un2txra8/SOL-VIBRA-DJ-Zarek.mp3?raw=1">SOL VIBRA - DJ ZAREK</div>
     </div>
 </div>
 
@@ -118,13 +118,10 @@ let currentSongIndex = -1;
 let repeat = false;
 
 function fixDropboxLink(url){
-    // Convert Dropbox shared link to direct download link
-    if(url.includes('dropbox.com') && !url.includes('?raw=1')){
-        if(url.includes('?dl=0') || url.includes('?dl=1')){
-            url = url.replace('?dl=0','?raw=1').replace('?dl=1','?raw=1');
-        } else {
-            url += '?raw=1';
-        }
+    // Clean Dropbox links to always be direct and playable
+    if(url.includes('dropbox.com')){
+        let baseUrl = url.split('?')[0];
+        url = baseUrl + '?raw=1';
     }
     return url;
 }
