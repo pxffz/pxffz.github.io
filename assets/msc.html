@@ -1,256 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!--- THIS WORK OR NAH? --->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Music Player</title>
+<title>Neon Music Player</title>
 <style>
-body {
-    margin: 0;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-    background: black;
-    color: white;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    body {
+        background: #000;
+        color: white;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+    }
 
-#player {
-    background: rgba(0,0,0,0.9);
-    border: 2px solid white;
-    border-radius: 15px;
-    padding: 20px;
-    width: 450px;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-}
+    h1 {
+        text-shadow: 0 0 20px #0ff;
+    }
 
-#songInfo {
-    font-weight: bold;
-    margin-bottom: 15px;
-    text-align: center;
-}
+    .controls button {
+        background: black;
+        border: 2px solid #0ff;
+        color: white;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 10px;
+        font-size: 20px;
+        cursor: pointer;
+        transition: 0.2s;
+        box-shadow: 0 0 10px #0ff;
+    }
 
-#controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 15px;
-}
+    .controls button:hover {
+        box-shadow: 0 0 20px #0ff;
+        transform: scale(1.1);
+    }
 
-button {
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid white;
-    background: black;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.2s;
-}
+    #repeatBtn.active {
+        animation: pulse 1s infinite;
+        box-shadow: 0 0 20px white;
+    }
 
-button:hover {
-    background: #222;
-}
+    @keyframes pulse {
+        0% { box-shadow: 0 0 10px white; }
+        50% { box-shadow: 0 0 25px white; }
+        100% { box-shadow: 0 0 10px white; }
+    }
 
-#repeat.on {
-    animation: pulse 1s infinite alternate;
-    box-shadow: 0 0 20px white;
-}
+    #visualizer {
+        width: 100%;
+        height: 120px;
+        display: flex;
+        gap: 8px;
+        margin-top: 25px;
+    }
 
-@keyframes pulse {
-    0% { box-shadow: 0 0 10px white; }
-    100% { box-shadow: 0 0 40px white; }
-}
+    .bar {
+        flex: 1;
+        background: white;
+        border-radius: 50px;
+        opacity: 0.8;
+        box-shadow: 0 0 15px white;
+    }
 
-input[type="range"] {
-    width: 100px;
-}
+    #songList button {
+        background: #111;
+        border: 2px solid #0ff;
+        margin: 5px;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 0 8px #0ff;
+        transition: 0.2s;
+    }
 
-#songSelect {
-    margin-bottom: 10px;
-    width: 100%;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid white;
-    background: black;
-    color: white;
-}
+    #songList button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px #0ff;
+    }
 
-#progressContainer {
-    width: 100%;
-    background: #333;
-    height: 6px;
-    border-radius: 3px;
-    margin-bottom: 10px;
-    cursor: pointer;
-}
+    .addSongBox input {
+        padding: 8px;
+        margin: 5px;
+        width: 80%;
+        border-radius: 6px;
+        border: 2px solid #0ff;
+        background: #111;
+        color: white;
+    }
 
-#progressBar {
-    width: 0%;
-    height: 100%;
-    background: white;
-    border-radius: 3px;
-}
-
-#visualizer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: black;
-    z-index: 0;
-}
+    .addSongBox button {
+        background: black;
+        border: 2px solid #0ff;
+        padding: 8px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 8px;
+        box-shadow: 0 0 10px #0ff;
+    }
 </style>
 </head>
 <body>
+<h1>🔥 Neon Music Player 🔥</h1>
 
-<div id="player">
-    <div id="songInfo">SOL VIBRA - DJ ZAREK</div>
-    <select id="songSelect">
-        <option value="https://dl.dropboxusercontent.com/scl/fi/yhld02nhkv67ybatemdzy/SOL-VIBRA-Slowed-DJ-Zarek.mp3?rlkey=sy5qtggjtiu0o52bq9an5qufc&st=emcx226l&dl=0">SOL VIBRA - DJ ZAREK</option>
-        <option value="https://dl.dropboxusercontent.com/scl/fi/rtia97mai2ad1aq2ubsli/SKRILLEX-Bangarang-feat.-Sirah-Official-Music-Video-Skrillex.mp3?rlkey=t08e51k2s2u28mi90pfv3jyhq&st=j6bu3i2w&dl=0">BANGERANG - SKRILLEX</option>
-        <option value="https://dl.dropboxusercontent.com/scl/fi/6o75o7ad2z9ivhmxf8zt9/YNW-Melly-Murder-On-My-Mind-Official-Video-YNW-Melly.mp3?rlkey=97e7gwygwanqrpovx60sn7jwm&st=i4pobosa&dl=0">MURDER ON MY MIND - YNW MELLY</option>
-    </select>
+<audio id="player"></audio>
 
-    <div id="progressContainer"><div id="progressBar"></div></div>
-
-    <div id="controls">
-        <button id="playPause">▶️ / ⏸️</button>
-        <button id="speedDown">🐢 -5</button>
-        <button id="speedUp">🚀 +5</button>
-        <button id="repeat">🔁</button>
-        <label>🔊 <input type="range" id="volume" min="0" max="1500" value="750"></label>
-        <label>🎸 <input type="range" id="bass" min="0" max="500" value="250"></label>
-    </div>
+<div class="controls">
+    <button id="playPause">⏯️</button>
+    <button id="speedDown">🐢 -5%</button>
+    <button id="speedUp">⚡ +5%</button>
+    <button id="repeatBtn">🔁</button>
 </div>
 
-<audio id="audio" src="" crossorigin="anonymous"></audio>
-<canvas id="visualizer"></canvas>
+<br>
+<label>Volume: 0 - 1500</label>
+<input type="range" id="volume" min="0" max="1500" value="500"><br>
+
+<label>Bass Boost: 0 - 75</label>
+<input type="range" id="bass" min="0" max="75" value="0"><br>
+
+<h2>🎵 Song List</h2>
+<div id="songList"></div>
+
+<h2>Add Your Own Song</h2>
+<div class="addSongBox">
+    <input id="songName" placeholder="Song Name">
+    <input id="songURL" placeholder="Direct MP3 Link">
+    <button onclick="addNewSong()">Add Song</button>
+</div>
+
+<div id="visualizer"></div>
 
 <script>
-const audio = document.getElementById('audio');
-const playPauseBtn = document.getElementById('playPause');
-const speedUpBtn = document.getElementById('speedUp');
-const speedDownBtn = document.getElementById('speedDown');
-const volumeSlider = document.getElementById('volume');
-const bassSlider = document.getElementById('bass');
-const repeatBtn = document.getElementById('repeat');
-const songSelect = document.getElementById('songSelect');
-const songInfo = document.getElementById('songInfo');
-const progressBar = document.getElementById('progressBar');
-const progressContainer = document.getElementById('progressContainer');
+const player = document.getElementById('player');
+const songListDiv = document.getElementById('songList');
+const repeatBtn = document.getElementById('repeatBtn');
+let repeatOn = false;
 
-let isPlaying = false;
-let repeat = false;
+let songs = [
+    { name: "SOL VIBRA - DJ ZAREK", url: "https://dl.dropboxusercontent.com/scl/fi/yhld02nhkv67ybatemdzy/SOL-VIBRA-Slowed-DJ-Zarek.mp3?rlkey=sy5qtggjtiu0o52bq9an5qufc&st=emcx226l&dl=0" },
+    { name: "BANGERANG - SKRILLEX", url: "https://dl.dropboxusercontent.com/scl/fi/rtia97mai2ad1aq2ubsli/SKRILLEX-Bangarang-feat.-Sirah-Official-Music-Video-Skrillex.mp3?rlkey=t08e51k2s2u28mi90pfv3jyhq&st=j6bu3i2w&dl=0" },
+    { name: "MURDER ON MY MIND - YNW MELLY", url: "https://dl.dropboxusercontent.com/scl/fi/6o75o7ad2z9ivhmxf8zt9/YNW-Melly-Murder-On-My-Mind-Official-Video-YNW-Melly.mp3?rlkey=97e7gwygwanqrpovx60sn7jwm&st=i4pobosa&dl=0" }
+];
 
-// Audio context for bass + visualizer
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-const ctx = new AudioContext();
-const source = ctx.createMediaElementSource(audio);
-const gainNode = ctx.createGain();
-const bassFilter = ctx.createBiquadFilter();
-bassFilter.type = "lowshelf";
-bassFilter.frequency.value = 200;
-
-source.connect(bassFilter);
-bassFilter.connect(gainNode);
-gainNode.connect(ctx.destination);
-
-// Visualizer setup
-const canvas = document.getElementById('visualizer');
-const cctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-const analyser = ctx.createAnalyser();
-bassFilter.connect(analyser);
-analyser.fftSize = 1024;
-const bufferLength = analyser.frequencyBinCount;
-const dataArray = new Uint8Array(bufferLength);
-
-function drawVisualizer() {
-    requestAnimationFrame(drawVisualizer);
-    analyser.getByteFrequencyData(dataArray);
-
-    cctx.fillStyle = 'rgba(0,0,0,0.1)';
-    cctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    cctx.beginPath();
-    const sliceWidth = canvas.width / bufferLength;
-    let x = 0;
-    for (let i = 0; i < bufferLength; i++) {
-        const y = canvas.height/2 - dataArray[i]/1.5;
-        if(i===0) cctx.moveTo(x, y);
-        else cctx.lineTo(x, y);
-        x += sliceWidth;
-    }
-    cctx.strokeStyle = 'white';
-    cctx.lineWidth = 2;
-    cctx.shadowColor = 'white';
-    cctx.shadowBlur = 20;
-    cctx.stroke();
+function loadSongs() {
+    songListDiv.innerHTML = "";
+    songs.forEach((song, index) => {
+        const btn = document.createElement("button");
+        btn.textContent = song.name;
+        btn.onclick = () => playSong(index);
+        songListDiv.appendChild(btn);
+    });
 }
 
-drawVisualizer();
+function playSong(index) {
+    player.src = songs[index].url;
+    player.play();
+}
 
-// Button actions
-playPauseBtn.onclick = () => {
-    if (!isPlaying) {
-        ctx.resume().then(() => audio.play());
-        playPauseBtn.textContent = '⏸️ / ▶️';
-    } else {
-        audio.pause();
-        playPauseBtn.textContent = '▶️ / ⏸️';
-    }
-    isPlaying = !isPlaying;
+document.getElementById('playPause').onclick = () => {
+    if (player.paused) player.play(); else player.pause();
 };
 
-speedUpBtn.onclick = () => { audio.playbackRate += 0.05; };
-speedDownBtn.onclick = () => { audio.playbackRate = Math.max(0.05, audio.playbackRate - 0.05); };
+document.getElementById('speedUp').onclick = () => player.playbackRate += 0.05;
+document.getElementById('speedDown').onclick = () => player.playbackRate -= 0.05;
 
-volumeSlider.oninput = () => { gainNode.gain.value = volumeSlider.value / 1000; };
-bassSlider.oninput = () => { bassFilter.gain.value = bassSlider.value; };
+document.getElementById('volume').oninput = (e) => player.volume = e.target.value / 1500;
+
+document.getElementById('bass').oninput = (e) => {
+    player.style.filter = `bass-boost(${e.target.value}dB)`;
+};
 
 repeatBtn.onclick = () => {
-    repeat = !repeat;
-    repeatBtn.classList.toggle('on', repeat);
+    repeatOn = !repeatOn;
+    player.loop = repeatOn;
+    repeatBtn.classList.toggle("active", repeatOn);
 };
 
-songSelect.onchange = () => {
-    audio.src = songSelect.value;
-    songInfo.textContent = songSelect.options[songSelect.selectedIndex].text;
-    if(isPlaying) audio.play();
-};
+function addNewSong() {
+    let name = document.getElementById('songName').value;
+    let url = document.getElementById('songURL').value;
+    if (!name || !url) return alert("Enter name & MP3 URL!");
 
-// Progress bar update
-audio.ontimeupdate = () => {
-    const percent = (audio.currentTime / audio.duration) * 100;
-    progressBar.style.width = percent + "%";
-};
+    songs.push({ name, url });
+    loadSongs();
+}
 
-progressContainer.onclick = (e) => {
-    const rect = progressContainer.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const percent = x / rect.width;
-    audio.currentTime = percent * audio.duration;
-};
+// Build visualizer bars
+const visualizer = document.getElementById('visualizer');
+for (let i = 0; i < 30; i++) {
+    let bar = document.createElement('div');
+    bar.className = 'bar';
+    visualizer.appendChild(bar);
+}
 
-audio.onended = () => {
-    if (repeat) { audio.currentTime = 0; audio.play(); }
-};
+setInterval(() => {
+    document.querySelectorAll('.bar').forEach(bar => {
+        bar.style.height = Math.random() * 120 + 'px';
+    });
+}, 70);
 
-// Initialize first song
-audio.src = songSelect.value;
+loadSongs();
 </script>
-
 </body>
 </html>
