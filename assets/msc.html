@@ -3,204 +3,193 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neon Music Player</title>
+<title>Ultimate Music Player</title>
 <style>
-    body {
-        background: #000;
-        color: white;
-        font-family: Arial, sans-serif;
-        text-align: center;
-        padding: 20px;
-    }
+body {
+    margin: 0;
+    height: 100vh;
+    background: #000;
+    color: white;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
 
-    h1 {
-        text-shadow: 0 0 20px #0ff;
-    }
+#player {
+    background: rgba(20,20,20,0.9);
+    border: 1px solid white;
+    border-radius: 15px;
+    padding: 20px;
+    width: 420px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-    .controls button {
-        background: black;
-        border: 2px solid #0ff;
-        color: white;
-        padding: 10px 20px;
-        margin: 5px;
-        border-radius: 10px;
-        font-size: 20px;
-        cursor: pointer;
-        transition: 0.2s;
-        box-shadow: 0 0 10px #0ff;
-    }
+#songInfo {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+}
 
-    .controls button:hover {
-        box-shadow: 0 0 20px #0ff;
-        transform: scale(1.1);
-    }
+#controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
 
-    #repeatBtn.active {
-        animation: pulse 1s infinite;
-        box-shadow: 0 0 20px white;
-    }
+button {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 2px solid white;
+    background: black;
+    color: white;
+    cursor: pointer;
+    font-size: 17px;
+    transition: 0.2s;
+}
+button:hover {
+    background: #222;
+}
 
-    @keyframes pulse {
-        0% { box-shadow: 0 0 10px white; }
-        50% { box-shadow: 0 0 25px white; }
-        100% { box-shadow: 0 0 10px white; }
-    }
+#repeat.on {
+    animation: pulse 1s infinite alternate;
+    box-shadow: 0 0 20px white;
+}
+@keyframes pulse {
+    0% { box-shadow: 0 0 8px white; }
+    100% { box-shadow: 0 0 30px white; }
+}
 
-    #visualizer {
-        width: 100%;
-        height: 120px;
-        display: flex;
-        gap: 8px;
-        margin-top: 25px;
-    }
+input[type="range"] { width: 120px; }
 
-    .bar {
-        flex: 1;
-        background: white;
-        border-radius: 50px;
-        opacity: 0.8;
-        box-shadow: 0 0 15px white;
-    }
+#progressContainer {
+    width: 100%;
+    height: 6px;
+    background: #333;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+#progressBar {
+    height: 6px;
+    width: 0%;
+    background: white;
+    border-radius: 5px;
+}
 
-    #songList button {
-        background: #111;
-        border: 2px solid #0ff;
-        margin: 5px;
-        padding: 10px;
-        border-radius: 8px;
-        cursor: pointer;
-        box-shadow: 0 0 8px #0ff;
-        transition: 0.2s;
-    }
-
-    #songList button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 15px #0ff;
-    }
-
-    .addSongBox input {
-        padding: 8px;
-        margin: 5px;
-        width: 80%;
-        border-radius: 6px;
-        border: 2px solid #0ff;
-        background: #111;
-        color: white;
-    }
-
-    .addSongBox button {
-        background: black;
-        border: 2px solid #0ff;
-        padding: 8px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 16px;
-        margin-top: 8px;
-        box-shadow: 0 0 10px #0ff;
-    }
+#visualizer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 200px;
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+}
+.bar {
+    width: 10px;
+    background: white;
+    border-radius: 5px;
+    opacity: 0.7;
+    box-shadow: 0 0 15px white;
+}
 </style>
 </head>
 <body>
-<h1>🔥 Neon Music Player 🔥</h1>
 
-<audio id="player"></audio>
+<div id="player">
+    <div id="songInfo">Loading...</div>
+    <select id="songSelect"></select>
 
-<div class="controls">
-    <button id="playPause">⏯️</button>
-    <button id="speedDown">🐢 -5%</button>
-    <button id="speedUp">⚡ +5%</button>
-    <button id="repeatBtn">🔁</button>
-</div>
+    <div id="progressContainer">
+        <div id="progressBar"></div>
+    </div>
 
-<br>
-<label>Volume: 0 - 1500</label>
-<input type="range" id="volume" min="0" max="1500" value="500"><br>
+    <div id="controls">
+        <button id="playPause">⏯️</button>
+        <button id="speedDown">🐌 -5%</button>
+        <button id="speedUp">⚡ +5%</button>
+        <button id="repeat">🔁</button>
+    </div>
 
-<label>Bass Boost: 0 - 75</label>
-<input type="range" id="bass" min="0" max="75" value="0"><br>
+    <div>🔊 Volume</div>
+    <input id="volumeSlider" type="range" min="0" max="1500" value="500">
 
-<h2>🎵 Song List</h2>
-<div id="songList"></div>
-
-<h2>Add Your Own Song</h2>
-<div class="addSongBox">
-    <input id="songName" placeholder="Song Name">
-    <input id="songURL" placeholder="Direct MP3 Link">
-    <button onclick="addNewSong()">Add Song</button>
+    <div style="margin-top:10px;">🎚️ Bass Boost</div>
+    <input id="bassSlider" type="range" min="0" max="25" value="0">
 </div>
 
 <div id="visualizer"></div>
+<audio id="audio"></audio>
 
 <script>
-const player = document.getElementById('player');
-const songListDiv = document.getElementById('songList');
-const repeatBtn = document.getElementById('repeatBtn');
-let repeatOn = false;
+const audio = document.getElementById("audio");
+const songInfo = document.getElementById("songInfo");
+const progressBar = document.getElementById("progressBar");
+const progressContainer = document.getElementById("progressContainer");
+const playPause = document.getElementById("playPause");
+const speedUp = document.getElementById("speedUp");
+const speedDown = document.getElementById("speedDown");
+const repeatBtn = document.getElementById("repeat");
+const volumeSlider = document.getElementById("volumeSlider");
+const bassSlider = document.getElementById("bassSlider");
+const songSelect = document.getElementById("songSelect");
 
-let songs = [
+// AUDIO CONTEXT & BASS
+const ctx = new AudioContext();
+const track = ctx.createMediaElementSource(audio);
+const bass = ctx.createBiquadFilter();
+bass.type = "lowshelf";
+bass.frequency.value = 200; // low freq for bass
+track.connect(bass).connect(ctx.destination);
+
+// ONLY OWNER EDITS THIS LIST
+const songs = [
     { name: "SOL VIBRA - DJ ZAREK", url: "https://dl.dropboxusercontent.com/scl/fi/yhld02nhkv67ybatemdzy/SOL-VIBRA-Slowed-DJ-Zarek.mp3?rlkey=sy5qtggjtiu0o52bq9an5qufc&st=emcx226l&dl=0" },
     { name: "BANGERANG - SKRILLEX", url: "https://dl.dropboxusercontent.com/scl/fi/rtia97mai2ad1aq2ubsli/SKRILLEX-Bangarang-feat.-Sirah-Official-Music-Video-Skrillex.mp3?rlkey=t08e51k2s2u28mi90pfv3jyhq&st=j6bu3i2w&dl=0" },
     { name: "MURDER ON MY MIND - YNW MELLY", url: "https://dl.dropboxusercontent.com/scl/fi/6o75o7ad2z9ivhmxf8zt9/YNW-Melly-Murder-On-My-Mind-Official-Video-YNW-Melly.mp3?rlkey=97e7gwygwanqrpovx60sn7jwm&st=i4pobosa&dl=0" }
 ];
 
-function loadSongs() {
-    songListDiv.innerHTML = "";
+function loadSongList() {
+    songSelect.innerHTML = '';
     songs.forEach((song, index) => {
-        const btn = document.createElement("button");
-        btn.textContent = song.name;
-        btn.onclick = () => playSong(index);
-        songListDiv.appendChild(btn);
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = song.name;
+        songSelect.appendChild(option);
     });
 }
 
-function playSong(index) {
-    player.src = songs[index].url;
-    player.play();
+songSelect.onchange = () => loadSong(songSelect.value);
+function loadSong(index) {
+    audio.src = songs[index].url;
+    songInfo.textContent = songs[index].name;
+    audio.play();
+    ctx.resume();
 }
 
-document.getElementById('playPause').onclick = () => {
-    if (player.paused) player.play(); else player.pause();
-};
+loadSongList();
+loadSong(0);
 
-document.getElementById('speedUp').onclick = () => player.playbackRate += 0.05;
-document.getElementById('speedDown').onclick = () => player.playbackRate -= 0.05;
+playPause.onclick = () => { if(audio.paused) audio.play(); else audio.pause(); };
+speedUp.onclick = () => audio.playbackRate += 0.05;
+speedDown.onclick = () => audio.playbackRate -= 0.05;
+repeatBtn.onclick = () => { audio.loop = !audio.loop; repeatBtn.classList.toggle("on"); };
+volumeSlider.oninput = () => audio.volume = volumeSlider.value/1500;
+bassSlider.oninput = () => bass.gain.value = bassSlider.value;
 
-document.getElementById('volume').oninput = (e) => player.volume = e.target.value / 1500;
-
-document.getElementById('bass').oninput = (e) => {
-    player.style.filter = `bass-boost(${e.target.value}dB)`;
-};
-
-repeatBtn.onclick = () => {
-    repeatOn = !repeatOn;
-    player.loop = repeatOn;
-    repeatBtn.classList.toggle("active", repeatOn);
-};
-
-function addNewSong() {
-    let name = document.getElementById('songName').value;
-    let url = document.getElementById('songURL').value;
-    if (!name || !url) return alert("Enter name & MP3 URL!");
-
-    songs.push({ name, url });
-    loadSongs();
-}
-
-// Build visualizer bars
+// Visualizer
 const visualizer = document.getElementById('visualizer');
-for (let i = 0; i < 30; i++) {
-    let bar = document.createElement('div');
-    bar.className = 'bar';
-    visualizer.appendChild(bar);
-}
-
-setInterval(() => {
-    document.querySelectorAll('.bar').forEach(bar => {
-        bar.style.height = Math.random() * 120 + 'px';
-    });
-}, 70);
-
-loadSongs();
+for(let i=0;i<30;i++){const b=document.createElement('div');b.className='bar';visualizer.appendChild(b);}
+setInterval(()=>{document.querySelectorAll('.bar').forEach(b=>b.style.height=Math.random()*200+'px');},50);
 </script>
+
 </body>
 </html>
