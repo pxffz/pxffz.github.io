@@ -3,249 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Epic Black & White Music Player</title>
+<title>Ultimate Music Player</title>
 <style>
     body {
         margin: 0;
-        background: black;
-        font-family: 'Courier New', monospace;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
         height: 100vh;
-        overflow: hidden;
-    }
-
-    .player {
-        margin-top: 20px;
-        background: #111;
-        border: 2px solid white;
-        border-radius: 15px;
-        padding: 20px;
-        width: 400px;
         display: flex;
         flex-direction: column;
+        justify-content: center;
         align-items: center;
-        box-shadow: 0 0 15px rgba(255,255,255,0.3);
+        background: black;
+        color: white;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
     }
 
-    .controls {
+    h1 {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    #controls {
         display: flex;
-        align-items: center;
-        justify-content: space-around;
-        width: 100%;
-        margin-top: 15px;
+        gap: 10px;
         flex-wrap: wrap;
-        gap: 5px;
+        justify-content: center;
+        margin-bottom: 20px;
+        z-index: 10;
+        position: relative;
     }
 
     button {
-        background: black;
-        border: 2px solid white;
-        color: white;
-        padding: 10px;
-        border-radius: 10px;
-        cursor: pointer;
+        padding: 10px 15px;
         font-size: 16px;
-        transition: all 0.2s ease;
-    }
-
-    button:hover {
-        box-shadow: 0 0 10px white;
-    }
-
-    #repeater.active {
-        background: white;
-        color: black;
-    }
-
-    input[type=range] {
-        width: 95%;
-        margin-top: 10px;
-    }
-
-    .playlist {
-        margin-top: 20px;
-        width: 100%;
-    }
-
-    .playlist div {
-        padding: 8px;
-        border-bottom: 1px solid white;
+        border: none;
+        border-radius: 5px;
+        background: #ff4c4c;
+        color: white;
         cursor: pointer;
         transition: 0.2s;
     }
 
-    .playlist div:hover, .playlist .active-song {
-        background: rgba(255,255,255,0.2);
+    button:hover {
+        background: #ff1c1c;
     }
 
-    canvas {
+    #repeat.on {
+        animation: pulse 1s infinite alternate;
+        box-shadow: 0 0 20px white;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 10px white; }
+        100% { box-shadow: 0 0 40px white; }
+    }
+
+    input[type="range"] {
+        width: 150px;
+    }
+
+    #visualizer {
         position: absolute;
         top: 0;
         left: 0;
-        z-index: -1;
+        width: 100%;
+        height: 100%;
+        background: black;
+        z-index: 0;
     }
 </style>
 </head>
 <body>
-<canvas id="visualizer"></canvas>
-<div class="player">
-    <h2>Epic Music Player</h2>
-    <div class="controls">
-        <button id="back5">⏪</button>
-        <button id="playpause">▶️</button>
-        <button id="forward5">⏩</button>
-        <button id="speedDown">-5 Speed</button>
-        <button id="speedUp">+5 Speed</button>
-        <button id="repeater">🔁</button>
-    </div>
-    <label>Volume: <input type="range" id="volume" max="1000" value="500"></label>
-    <label>Bass: <input type="range" id="bass" max="1000" value="500"></label>
-    <div class="playlist" id="playlist">
-        <!-- Playlist remains the same -->
-        <div data-src="https://dl.dropboxusercontent.com/s/ec3oyejudh35mfgw7lxrg/GROW-A-GARDEN-FUNK-SHX4-x-SXYGX-x-FYU-RioX.mp3?raw=1">GROW A GARDEN FUNK - SHX0</div>
-        <div data-src="https://dl.dropboxusercontent.com/s/3r46mi8q50c904bh6ntoq/NO-ERA-AMOR-Extended-SUKA.mp3?raw=1">NO ERA MOR - suka</div>
-        <div data-src="https://dl.dropboxusercontent.com/s/d84yhtuwmqfc6un2txra8/SOL-VIBRA-DJ-Zarek.mp3?raw=1">SOL VIBRA - DJ ZAREK</div>
-    </div>
+<h1>Ultimate Music Player</h1>
+
+<div id="controls">
+    <button id="playPause">▶️ / ⏸️</button>
+    <button id="speedDown">🐢 -5</button>
+    <button id="speedUp">🚀 +5</button>
+    <button id="repeat">🔁</button>
+    <label>🔊 Volume: <input type="range" id="volume" min="0" max="1500" value="750"></label>
+    <label>🎸 Bass: <input type="range" id="bass" min="0" max="500" value="250"></label>
 </div>
 
+<select id="songSelect">
+    <option value="https://dl.dropboxusercontent.com/scl/fi/yhld02nhkv67ybatemdzy/SOL-VIBRA-Slowed-DJ-Zarek.mp3?rlkey=sy5qtggjtiu0o52bq9an5qufc&st=emcx226l&dl=0">SOL VIBRA - DJ ZAREK</option>
+    <option value="https://dl.dropboxusercontent.com/scl/fi/rtia97mai2ad1aq2ubsli/SKRILLEX-Bangarang-feat.-Sirah-Official-Music-Video-Skrillex.mp3?rlkey=t08e51k2s2u28mi90pfv3jyhq&st=j6bu3i2w&dl=0">BANGERANG - SKRILLEX</option>
+    <option value="https://dl.dropboxusercontent.com/scl/fi/6o75o7ad2z9ivhmxf8zt9/YNW-Melly-Murder-On-My-Mind-Official-Video-YNW-Melly.mp3?rlkey=97e7gwygwanqrpovx60sn7jwm&st=i4pobosa&dl=0">MURDER ON MY MIND - YNW MELLY</option>
+</select>
+
+<audio id="audio" src="" crossorigin="anonymous"></audio>
+<canvas id="visualizer"></canvas>
+
 <script>
-const audio = new Audio();
-let currentSongIndex = -1;
-let repeat = false;
-
-function fixDropboxLink(url){
-    // Clean Dropbox links to always be direct and playable
-    if(url.includes('dropbox.com')){
-        let baseUrl = url.split('?')[0];
-        url = baseUrl + '?raw=1';
-    }
-    return url;
-}
-
-function refreshPlaylist() {
-    const playlistDivs = document.querySelectorAll('#playlist div');
-    playlistDivs.forEach((div,i)=>{
-        div.onclick = ()=>{
-            playSong(i);
-        };
-    });
-    return playlistDivs;
-}
-
-let playlistDivs = refreshPlaylist();
-const playpauseBtn = document.getElementById('playpause');
-const repeaterBtn = document.getElementById('repeater');
-
-function playSong(index){
-    if(currentSongIndex !== -1) playlistDivs[currentSongIndex].classList.remove('active-song');
-    currentSongIndex = index;
-    audio.src = fixDropboxLink(playlistDivs[index].dataset.src);
-    playlistDivs[index].classList.add('active-song');
-    audio.play();
-    playpauseBtn.textContent = '⏸️';
-}
-
-playpauseBtn.addEventListener('click',()=>{
-    if(audio.paused) {
-        audio.play();
-        playpauseBtn.textContent = '⏸️';
-    } else {
-        audio.pause();
-        playpauseBtn.textContent = '▶️';
-    }
-});
-
-repeaterBtn.addEventListener('click',()=>{
-    repeat = !repeat;
-    repeaterBtn.classList.toggle('active', repeat);
-});
-
-document.getElementById('forward5').addEventListener('click',()=>{
-    audio.currentTime += 5;
-});
-document.getElementById('back5').addEventListener('click',()=>{
-    audio.currentTime -= 5;
-});
-
-document.getElementById('speedUp').addEventListener('click',()=>{
-    audio.playbackRate = Math.min(audio.playbackRate + 0.05, 3);
-});
-document.getElementById('speedDown').addEventListener('click',()=>{
-    audio.playbackRate = Math.max(audio.playbackRate - 0.05, 0.1);
-});
-
+const audio = document.getElementById('audio');
+const playPauseBtn = document.getElementById('playPause');
+const speedUpBtn = document.getElementById('speedUp');
+const speedDownBtn = document.getElementById('speedDown');
 const volumeSlider = document.getElementById('volume');
 const bassSlider = document.getElementById('bass');
+const repeatBtn = document.getElementById('repeat');
+const songSelect = document.getElementById('songSelect');
 
-volumeSlider.addEventListener('input',(e)=>{
-    audio.volume = e.target.value/1000;
-});
+let isPlaying = false;
+let repeat = false;
 
-bassSlider.addEventListener('input',(e)=>{
-    bassGain.gain.value = e.target.value/1000;
-});
+// Audio Context for bass + visualizer
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const ctx = new AudioContext();
+const source = ctx.createMediaElementSource(audio);
+const gainNode = ctx.createGain();
+const bassFilter = ctx.createBiquadFilter();
+bassFilter.type = "lowshelf";
+bassFilter.frequency.value = 200;
+
+source.connect(bassFilter);
+bassFilter.connect(gainNode);
+gainNode.connect(ctx.destination);
 
 // Visualizer setup
 const canvas = document.getElementById('visualizer');
-const ctx = canvas.getContext('2d');
+const cctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-const analyser = audioCtx.createAnalyser();
-const source = audioCtx.createMediaElementSource(audio);
-const bassGain = audioCtx.createGain();
-
-source.connect(bassGain);
-bassGain.connect(analyser);
-analyser.connect(audioCtx.destination);
-
-analyser.fftSize = 256;
+const analyser = ctx.createAnalyser();
+bassFilter.connect(analyser);
+analyser.fftSize = 1024;
 const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 
-function draw(){
-    requestAnimationFrame(draw);
+function drawVisualizer() {
+    requestAnimationFrame(drawVisualizer);
     analyser.getByteFrequencyData(dataArray);
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    const barWidth = (canvas.width / bufferLength) * 2.5;
+    cctx.fillStyle = 'rgba(0,0,0,0.1)';
+    cctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    cctx.beginPath();
+    const sliceWidth = canvas.width / bufferLength;
     let x = 0;
-    for(let i=0;i<bufferLength;i++){
-        const barHeight = dataArray[i]*1.5;
-        ctx.fillStyle = 'rgba(255,255,255,0.8)';
-        ctx.fillRect(x, canvas.height-barHeight, barWidth, barHeight);
-        x += barWidth + 1;
+    for (let i = 0; i < bufferLength; i++) {
+        const y = canvas.height/2 - dataArray[i];
+        if(i===0) cctx.moveTo(x, y);
+        else cctx.lineTo(x, y);
+        x += sliceWidth;
     }
-}
-draw();
-
-audio.addEventListener('ended',()=>{
-    if(repeat) audio.currentTime = 0, audio.play();
-    else {
-        let next = (currentSongIndex+1)%playlistDivs.length;
-        playSong(next);
-    }
-});
-
-function addSong(title, url){
-    const playlist = document.getElementById('playlist');
-    const newDiv = document.createElement('div');
-    newDiv.dataset.src = url;
-    newDiv.textContent = title;
-    playlist.appendChild(newDiv);
-    playlistDivs = refreshPlaylist();
+    cctx.strokeStyle = 'white';
+    cctx.lineWidth = 2;
+    cctx.shadowColor = 'white';
+    cctx.shadowBlur = 20;
+    cctx.stroke();
 }
 
-window.addEventListener('resize',()=>{
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
+drawVisualizer();
+
+// Button actions
+playPauseBtn.onclick = () => {
+    if (!isPlaying) {
+        ctx.resume().then(() => audio.play());
+        playPauseBtn.textContent = '⏸️ / ▶️';
+    } else {
+        audio.pause();
+        playPauseBtn.textContent = '▶️ / ⏸️';
+    }
+    isPlaying = !isPlaying;
+};
+
+speedUpBtn.onclick = () => {
+    audio.playbackRate += 0.05;
+};
+
+speedDownBtn.onclick = () => {
+    audio.playbackRate = Math.max(0.05, audio.playbackRate - 0.05);
+};
+
+volumeSlider.oninput = () => {
+    gainNode.gain.value = volumeSlider.value / 1000;
+};
+
+bassSlider.oninput = () => {
+    bassFilter.gain.value = bassSlider.value;
+};
+
+repeatBtn.onclick = () => {
+    repeat = !repeat;
+    repeatBtn.classList.toggle('on', repeat);
+};
+
+songSelect.onchange = () => {
+    audio.src = songSelect.value;
+    if (isPlaying) audio.play();
+};
+
+audio.onended = () => {
+    if (repeat) {
+        audio.currentTime = 0;
+        audio.play();
+    }
+};
+
+// Initialize first song
+audio.src = songSelect.value;
 </script>
 </body>
 </html>
