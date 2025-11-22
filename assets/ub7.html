@@ -1,7 +1,6 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <!--- NEVER STEAL SHIT FROM ME OR MY DELETED WEBSITES! I STILL OWN THEM. --->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>UNBL0CKEDZ0NE</title>
@@ -10,9 +9,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
 
 :root {
-  --accent: #2ecc71;
+  --accent: #2ecc71; /* Christmas Green */
   --bg-alpha: rgba(5, 20, 5, 0.75);
-  --glow: 0 0 20px #2ecc71, 0 0 35px #ff1c1c;
+  --glow: 0 0 20px #2ecc71, 0 0 35px #ff1c1c; /* Green + Red Glow */
 }
 
 html, body {
@@ -35,7 +34,7 @@ canvas#matrix {
   background:#000;
 }
 
-/* 🎄 Notice */
+/* 🎄 Notice (golden theme) */
 .notice {
   position: fixed;
   top: 10px;
@@ -157,7 +156,7 @@ canvas#matrix {
   gap:8px;
   align-items:center;
 }
-#search-bar {
+#search-bar, #uv-address {
   border-radius:25px;
   padding:10px;
   width:320px;
@@ -173,7 +172,7 @@ canvas#matrix {
 #search-button {
   border-radius:12px;
   padding:10px 14px;
-  background:#ff1c1c;
+  background:#ff1c1c; /* Christmas red */
   border:none;
   color:#fff;
   font-weight:600;
@@ -190,7 +189,7 @@ canvas#matrix {
   position:fixed;
   width:4px;
   height:4px;
-  background:#ff1c1c;
+  background:#ff1c1c; /* red floating particles */
   border-radius:50%;
   opacity:0.6;
   animation:floatParticle 6s linear infinite;
@@ -201,6 +200,7 @@ canvas#matrix {
   100% { transform:translateY(-20vh) translateX(20px); opacity:0; }
 }
 
+/* Cursor */
 #custom-cursor {
   position:fixed;
   width:18px;
@@ -219,6 +219,7 @@ canvas#matrix {
   to { transform:translate(-50%,-50%) scale(1.4); opacity:0.6; }
 }
 
+/* Social Buttons */
 #social-row {
   position: fixed;
   bottom: 20px;
@@ -280,11 +281,12 @@ canvas#matrix {
   <div class="center-controls">
     <div id="catchphrase">UNBL0CKEDZ0NE 🎅</div>
     <div id="quote">I know when you use other websites...</div>
-    <!-- Updated UV Proxy Search Bar -->
+
+    <!-- SEARCH BAR WITH UV PROXY -->
     <div id="search-container">
       <form id="uv-form" class="search-form" onsubmit="return uvSearch(this);">
         <input id="uv-search-engine" value="https://duckduckgo.com/?q=%s" type="hidden"/>
-        <input id="uv-address" type="text" placeholder="Search Something or Type a URL!" class="search-bar"/>
+        <input id="uv-address" type="text" placeholder="Search for G4mes! V3.82" class="search-bar"/>
         <button id="search-button" type="submit">Search</button>
       </form>
     </div>
@@ -300,8 +302,15 @@ canvas#matrix {
   <a href="https://sites.google.com/view/674169/t00ls/ugs-the-stash" target="_blank" class="social-btn">UGS</a>
 </div>
 
+<!-- UV proxy scripts -->
+<script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
+<script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
+<script src="/active/register-sw.js" charset="UTF-8" defer></script>
+<script src="/active/search.js" charset="UTF-8" defer></script>
+<script src="/active/index.js" charset="UTF-8" defer></script>
+
 <script>
-// MATRIX RAIN
+// MATRIX RAIN — now Christmas red
 const canvas = document.getElementById('matrix');
 const ctx = canvas.getContext('2d');
 let cw, ch, columns, drops, fontSize = 16, letters;
@@ -321,10 +330,8 @@ let lastTime = 0;
 function matrixLoop(ts) {
   if (ts - lastTime < 33) { requestAnimationFrame(matrixLoop); return; }
   lastTime = ts;
-
   ctx.fillStyle = 'rgba(0,0,0,0.1)';
   ctx.fillRect(0,0,cw,ch);
-
   ctx.fillStyle = '#ff1c1c';
   for (let i = 0; i < drops.length; i++) {
     const text = letters.charAt(Math.floor(Math.random() * letters.length));
@@ -387,13 +394,6 @@ document.addEventListener('mousemove', e => {
   cursor.style.top = e.clientY + 'px';
 });
 
-function doSearch() {
-  const q = document.getElementById('search-bar').value.trim();
-  if (!q) return;
-  const url = `https://sites.google.com/search/674169?query=${encodeURIComponent(q)}`;
-  window.open(url, '_blank');
-}
-
 const quotes = [
   "Access granted. Welcome back, Operator.",
   "Reality is firewalled. Freedom is the backdoor.",
@@ -422,11 +422,5 @@ for (let i = 0; i < 30; i++) {
 }
 </script>
 
-<!-- UV proxy scripts -->
-<script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
-<script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
-<script src="/active/register-sw.js" charset="UTF-8" defer></script>
-<script src="/active/search.js" charset="UTF-8" defer></script>
-<script src="/active/index.js" charset="UTF-8" defer></script>
 </body>
 </html>
