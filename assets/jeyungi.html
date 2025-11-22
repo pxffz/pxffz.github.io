@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>History Flooder — Edited by Pumpkin9186 (v0.2)</title>
+<title>History Flooder</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <style>
-  /* Dark, centered UI */
   :root { --bg:#121212; --card:#1e1e1e; --accent:#ff8800; --text:#f0f0f0; }
   html, body { height:100%; margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:var(--text); display:flex; align-items:center; justify-content:center; }
   .container { display:flex; flex-direction:column; align-items:center; gap:16px; background:var(--card); padding:24px 32px; border-radius:12px; box-shadow:0 0 20px rgba(0,0,0,0.5); min-width:300px; }
@@ -84,6 +83,80 @@ const sitePool = [
   "https://www.brainpop.com",
   "https://www.dictionary.com",
   "https://www.wikipedia.org",
+  "https://www.bbc.co.uk/bitesize",
+  "https://www.coolmathgames.com",
+  "https://www.discoveryeducation.com",
+  "https://www.edx.org",
+  "https://www.coursera.org",
+  "https://www.academicearth.org",
+  "https://www.openstax.org",
+  "https://www.study.com",
+  "https://www.ixl.com",
+  "https://www.prodigygame.com",
+  "https://www.brainly.com",
+  "https://www.mathplayground.com",
+  "https://www.ck12.org/student",
+  "https://www.sciencekids.co.nz",
+  "https://www.education.com",
+  "https://www.khanacademy.org/science",
+  "https://www.khanacademy.org/math",
+  "https://www.khanacademy.org/reading",
+  "https://www.khanacademy.org/grammar",
+  "https://www.khanacademy.org/computing",
+  "https://www.learnzillion.com",
+  "https://www.lessonplanet.com",
+  "https://www.readingeggs.com",
+  "https://www.typingclub.com",
+  "https://www.funbrain.com",
+  "https://www.learn360.com",
+  "https://www.sheppardsoftware.com",
+  "https://www.mathsisfun.com",
+  "https://www.freckle.com",
+  "https://www.getepic.com",
+  "https://www.mathantics.com",
+  "https://www.learnabout-electronics.org",
+  "https://www.historyforkids.net",
+  "https://www.sciencenewsforstudents.org",
+  "https://www.nationalgeographic.org/education",
+  "https://www.timeforkids.com",
+  "https://www.discoverykids.com",
+  "https://www.ck12.org/physics",
+  "https://www.ck12.org/chemistry",
+  "https://www.ck12.org/biology",
+  "https://www.ck12.org/history",
+  "https://www.ck12.org/engineering",
+  "https://www.ck12.org/geography",
+  "https://www.ck12.org/astronomy",
+  "https://www.ck12.org/economics",
+  "https://www.ck12.org/computer-science",
+  "https://www.ck12.org/earth-science",
+  "https://www.studyisland.com",
+  "https://www.lessonup.com",
+  "https://www.scholastic.com/learnathome",
+  "https://www.ducksters.com",
+  "https://www.natgeokids.com",
+  "https://www.funology.com",
+  "https://www.brainpop.com/games",
+  "https://www.nctm.org",
+  "https://www.aplusmath.com",
+  "https://www.storylineonline.net",
+  "https://www.readwritethink.org",
+  "https://www.bigthink.com/education",
+  "https://www.turtlediary.com",
+  "https://www.abcya.com",
+  "https://www.splashlearn.com",
+  "https://www.learninggamesforkids.com",
+  "https://www.coolkidfacts.com",
+  "https://www.mathgoodies.com",
+  "https://www.educationcorner.com",
+  "https://www.learnalberta.ca",
+  "https://www.eschooltoday.com",
+  "https://www.learninghub.com",
+  "https://www.globallearningresources.com",
+  "https://www.mysteryscience.com",
+  "https://www.pbslearningmedia.org",
+  "https://www.edhelper.com",
+  "https://www.softschools.com"
 ];
 
 function randSite(){ return sitePool[Math.floor(Math.random()*sitePool.length)]; }
@@ -98,7 +171,6 @@ async function openSequential(count, delayMs){
   }
 }
 
-// Buttons
 document.getElementById('lightBtn').addEventListener('click', ()=>openSequential(1,900));
 document.getElementById('mediumBtn').addEventListener('click', ()=>openSequential(3,700));
 document.getElementById('heavyBtn').addEventListener('click', ()=>openSequential(5,500));
