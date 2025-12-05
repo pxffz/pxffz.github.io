@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <title>🌸 Serenity Unbl0cker 🌸</title>
+  <!--- 
+    ALL OF THIS IS OFFICIALLY MADE BY SERENITY!
+  --->
 <link href="https://fonts.googleapis.com/css2?family=Lemonada:wght@600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papmWl8d1OeB1knc7hkIxhX0qTCM+AX+xD0bCqu/0mHCk27x5YsjzX2pIb9uZPX7fqO+HIVF0shQQmU0Ff6pFA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<!-- Font Awesome Kit for proper icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <style>
   /* Body and Background */
   body, html {
@@ -136,7 +140,7 @@
       <input id="uv-search-engine" value="https://duckduckgo.com/?q=%s" type="hidden"/> 
       <input id="uv-address" type="text" placeholder="Type A URL Here:" class="search-bar"/>
       <button type="submit" class="search-button">
-        Enter <i class="fa-solid fa-magnifying-glass" style="color:#000;"></i>
+        Enter <i class="fa-solid fa-magnifying-glass" style="color: #000000;"></i>
       </button>
     </form>
   </div>
@@ -149,9 +153,8 @@
     const engine = document.getElementById('uv-search-engine').value;
     const address = document.getElementById('uv-address').value;
     if(!address) return false;
-    // For now just open in new tab
     window.open(engine + encodeURIComponent(address), "_blank");
-    return false; // prevent form default submit
+    return false;
   }
 </script>
 
