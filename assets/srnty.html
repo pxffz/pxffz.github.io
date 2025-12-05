@@ -64,21 +64,21 @@
     50% { text-shadow: 0 0 20px #ab6dab; }
   }
 
-  /* Search Bar Outer Rectangle */
-  .search-outer {
+  /* UV Proxy Search Form Styles */
+  .search-container {
+    width: 100%;
+  }
+  .search-form {
+    display: flex;
     width: 100%;
     border: 2px solid #fa05fa;
     border-radius: 8px;
     padding: 4px;
     box-shadow: 0 0 15px #fa05fa;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 10px;
+    background: rgba(250, 147, 250, 0.45);
   }
-
-  /* Search Input */
-  .search-inner input {
-    width: 100%;
+  .search-bar {
+    flex: 1;
     padding: 8px 12px;
     border: 2px solid #fa05fa;
     border-radius: 6px;
@@ -87,12 +87,10 @@
     font-weight: 600;
     color: #000;
   }
-  .search-inner input::placeholder {
+  .search-bar::placeholder {
     color: #614a61;
   }
-
-  /* Enter Button */
-  .enter-btn {
+  .search-button {
     margin-left: 10px;
     padding: 8px 16px;
     font-family: 'Lemonada', sans-serif;
@@ -108,7 +106,7 @@
     transition: all 0.3s ease;
     box-shadow: 0 0 20px #ea3bed;
   }
-  .enter-btn:hover {
+  .search-button:hover {
     transform: translateY(-3px) scale(1.05);
   }
 </style>
@@ -132,24 +130,37 @@
 <div class="menu">
   <h1>🌸 Serenity Unbl0cker 🌸</h1>
 
-  <div class="search-outer">
-    <div class="search-inner" style="flex:1;">
-      <input type="text" placeholder="Type URL Here:" id="urlInput">
-    </div>
-    <button class="enter-btn" id="enterBtn">
-      Enter <i class="fa-solid fa-magnifying-glass" style="color:#000;"></i>
-    </button>
+  <!-- UV Proxy Search Form --> 
+  <div class="search-container">
+    <form id="uv-form" class="search-form" onsubmit="return uvSearch(this);">
+      <input id="uv-search-engine" value="https://duckduckgo.com/?q=%s" type="hidden"/> 
+      <input id="uv-address" type="text" placeholder="Type A URL Here:" class="search-bar"/>
+      <button type="submit" class="search-button">
+        Enter <i class="fa-solid fa-magnifying-glass" style="color:#000;"></i>
+      </button>
+    </form>
   </div>
+
 </div>
 
 <script>
-  const enterBtn = document.getElementById('enterBtn');
-  enterBtn.addEventListener('click', () => {
-    const url = document.getElementById('urlInput').value;
-    if(!url) return; // do nothing if input is empty
-    // UV Proxy functionality will go here
-  });
+  // Placeholder UV Proxy function
+  function uvSearch(form) {
+    const engine = document.getElementById('uv-search-engine').value;
+    const address = document.getElementById('uv-address').value;
+    if(!address) return false;
+    // For now just open in new tab
+    window.open(engine + encodeURIComponent(address), "_blank");
+    return false; // prevent form default submit
+  }
 </script>
+
+  <!-- UV Scripts -->
+  <script src="/active/uv/uv.bundle.js" charset="UTF-8" defer></script>
+  <script src="/active/uv/uv.config.js" charset="UTF-8" defer></script>
+  <script src="/active/register-sw.js" charset="UTF-8" defer></script>
+  <script src="/active/search.js" charset="UTF-8" defer></script>
+  <script src="/active/index.js" charset="UTF-8" defer></script>
 
 </body>
 </html>
