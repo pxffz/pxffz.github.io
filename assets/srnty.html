@@ -65,6 +65,30 @@
     50% { text-shadow: 0 0 20px #ab6dab; }
   }
 
+  /* Top Note Styles */
+  .top-note {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Lemonada', sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+    color: #ab6dab; /* same as menu title */
+    text-shadow: 0 0 10px #ab6dab;
+    opacity: 0;
+    animation: fadeInOut 2s infinite;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  @keyframes fadeInOut {
+    0% { opacity: 0; }
+    25% { opacity: 1; }
+    75% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
   /* UV Proxy Search Form Styles */
   .search-container {
     width: 100%;
@@ -114,6 +138,11 @@
 </head>
 <body>
 
+<!-- Top Note -->
+<div class="top-note">
+  NOTE: Whatever You Type In The Search Bar, It Will NOT Go To Your Search History.
+</div>
+
 <!-- Sparkles -->
 <script>
   const count = 50;
@@ -149,7 +178,7 @@
   function uvSearch(form) {
     const address = document.getElementById('uv-address').value;
     if(!address) return false; // prevent empty input
-    return true; // do not open new tab, UV proxy will handle it
+    return true; // UV proxy will handle URL inside the page
   }
 </script>
 
