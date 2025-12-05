@@ -65,17 +65,20 @@
     50% { text-shadow: 0 0 20px #ab6dab; }
   }
 
-  /* Top Note Styles */
+  /* Top Note Styles - Full width */
   .top-note {
     position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
     font-family: 'Lemonada', sans-serif;
     font-weight: bold;
     font-size: 18px;
     color: #ab6dab; /* same as menu title */
     text-shadow: 0 0 10px #ab6dab;
+    background: rgba(250, 147, 250, 0.3); /* optional light background for readability */
+    padding: 10px 0;
     opacity: 0;
     animation: fadeInOut 2s infinite;
     pointer-events: none;
