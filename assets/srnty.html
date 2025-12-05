@@ -3,9 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>🌸 Serenity Unbl0cker 🌸</title>
-  <!--- 
-    ALL OF THIS IS OFFICIALLY MADE BY SERENITY!
-  --->
 <link href="https://fonts.googleapis.com/css2?family=Lemonada:wght@600&display=swap" rel="stylesheet">
 <!-- Font Awesome Kit for proper icons -->
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -148,13 +145,11 @@
 </div>
 
 <script>
-  // Placeholder UV Proxy function
+  // UV Proxy form handler: let the UV proxy scripts handle the URL
   function uvSearch(form) {
-    const engine = document.getElementById('uv-search-engine').value;
     const address = document.getElementById('uv-address').value;
-    if(!address) return false;
-    window.open(engine + encodeURIComponent(address), "_blank");
-    return false;
+    if(!address) return false; // prevent empty input
+    return true; // do not open new tab, UV proxy will handle it
   }
 </script>
 
