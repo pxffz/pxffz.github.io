@@ -143,12 +143,11 @@
 </div>
 
 <script>
-  // Placeholder for future UV proxy function
   const enterBtn = document.getElementById('enterBtn');
   enterBtn.addEventListener('click', () => {
     const url = document.getElementById('urlInput').value;
-    if(!url) return alert("Please type a URL");
-    alert(`You typed: ${url} (UV Proxy functionality will go here)`);
+    if(!url) return; // do nothing if input is empty
+    // UV Proxy functionality will go here
   });
 </script>
 
