@@ -31,13 +31,18 @@ const originalOrder = [...albumMenus];
 const albumsContainer = document.getElementById('albumsContainer');
 const player = document.getElementById('player');
 
-// Web Audio API for bass
-const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-const track = audioCtx.createMediaElementSource(player);
-const bassFilter = audioCtx.createBiquadFilter();
-bassFilter.type='lowshelf';
-bassFilter.frequency.value=200;
-track.connect(bassFilter).connect(audioCtx.destination);
+let audioCtx, track, bassFilter;
+
+function initAudioContext(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    track = audioCtx.createMediaElementSource(player);
+    bassFilter = audioCtx.createBiquadFilter();
+    bassFilter.type='lowshelf';
+    bassFilter.frequency.value=200;
+    track.connect(bassFilter).connect(audioCtx.destination);
+  }
+}
 
 function createAlbumMenus(){
   albumsContainer.innerHTML='';
@@ -59,17 +64,16 @@ function createAlbumMenus(){
     `;
     albumsContainer.appendChild(div);
 
-    // Volume slider
     const volSlider = div.querySelector('.volSlider');
     volSlider.oninput = () => { player.volume = volSlider.value/100; };
 
-    // Bass slider
     const bassSlider = div.querySelector('.bassSlider');
-    bassSlider.oninput = () => { bassFilter.gain.value = bassSlider.value; };
+    bassSlider.oninput = () => { if(bassFilter) bassFilter.gain.value = bassSlider.value; };
   });
 }
 
 function playAlbum(src){
+  initAudioContext();
   if(audioCtx.state === 'suspended') audioCtx.resume();
   player.src = src;
   player.play();
