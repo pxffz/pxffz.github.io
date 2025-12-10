@@ -104,13 +104,18 @@
         }
 
         function processMoonSecV3(code) {
-            // Step 1: Basic string decryption (MoonSec often encodes strings as byte arrays or tables)
+            // Handle very long scripts by limiting processing if necessary
+            if (code.length > 1000000) {
+                throw new Error("Input code is too long. Please limit to 1MB or less for processing.");
+            }
+
+            // Step 1: Basic string decryption
             code = decryptStrings(code);
 
-            // Step 2: Simplify variable names (MoonSec uses random, long variable names)
+            // Step 2: Simplify variable names
             code = simplifyVariables(code);
 
-            // Step 3: Unwrap simple control flow obfuscation (e.g., unnecessary jumps or loops)
+            // Step 3: Unwrap simple control flow obfuscation
             code = unwrapControlFlow(code);
 
             // Step 4: Clean up formatting for readability
@@ -120,50 +125,45 @@
         }
 
         function decryptStrings(code) {
-            // This function attempts to detect and decode string tables or byte arrays
-            // MoonSec V3 often stores strings as tables like {104, 101, 108, 108, 111} for "hello"
+            // Detect and decode string tables or byte arrays
             const stringTablePattern = /\{(?:\d+,?\s*)+\}/g;
             return code.replace(stringTablePattern, (match) => {
                 try {
-                    // Extract numbers from the table
                     const numbers = match.match(/\d+/g).map(Number);
-                    // Convert to characters
                     let decoded = '';
                     for (let num of numbers) {
                         decoded += String.fromCharCode(num);
                     }
                     return `"${decoded}"`;
                 } catch (e) {
-                    return match; // Return unchanged if decoding fails
+                    return match;
                 }
             });
         }
 
         function simplifyVariables(code) {
-            // MoonSec uses long, random variable names. Replace them with shorter ones like v1, v2, etc.
-            const varPattern = /[a-zA-Z_][a-zA-Z0-9_]{10,}/g; // Match long variable names (10+ chars)
-            const usedVars = new Set();
+            // Replace long variable names with shorter ones
+            const varPattern = /[a-zA-Z_][a-zA-Z0-9_]{10,}/g;
+            const usedVars = new Map();
             let varCounter = 1;
 
             return code.replace(varPattern, (match) => {
-                if (usedVars.has(match)) return match;
-                const newVar = `v${varCounter++}`;
-                usedVars.add(match);
-                // Return the new short name
-                return newVar;
+                if (!usedVars.has(match)) {
+                    usedVars.set(match, `v${varCounter++}`);
+                }
+                return usedVars.get(match);
             });
         }
 
         function unwrapControlFlow(code) {
-            // Simplify redundant control flow (e.g., unnecessary while loops or if statements)
-            // This is a basic approach; MoonSec V3 often uses VM-based control flow which is harder to reverse
+            // Simplify redundant control flow
             const redundantLoopPattern = /while\s+true\s+do\s+break\s+end/g;
             code = code.replace(redundantLoopPattern, '');
             return code;
         }
 
         function formatCode(code) {
-            // Basic formatting to make the code readable (indentation and line breaks)
+            // Basic formatting with safeguard for negative indentation
             let formatted = '';
             let indentLevel = 0;
             const indentSize = 2;
@@ -173,12 +173,19 @@
                 line = line.trim();
                 if (!line) continue;
 
+                // Decrease indent for closing blocks, but ensure it doesn't go negative
                 if (line.includes('end') || line.includes('else') || line.includes('elseif')) {
-                    indentLevel--;
+                    indentLevel = Math.max(0, indentLevel - 1);
                 }
 
-                formatted += ' '.repeat(indentLevel * indentSize) + line + '\n';
+                // Add indentation, prevent invalid count errors
+                try {
+                    formatted += ' '.repeat(indentLevel * indentSize) + line + '\n';
+                } catch (e) {
+                    formatted += line + '\n'; // Fallback if repeat fails
+                }
 
+                // Increase indent for opening blocks
                 if (line.includes('do') || line.includes('then') || line.includes('function')) {
                     indentLevel++;
                 }
