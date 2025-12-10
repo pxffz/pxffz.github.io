@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoonSec V3 Deobfuscator</title>
+    <title>MoonSec V3 Lua Deobfuscator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,7 +29,7 @@
         }
         textarea {
             width: 100%;
-            height: 200px;
+            height: 250px;
             padding: 10px;
             font-family: 'Courier New', Courier, monospace;
             font-size: 14px;
@@ -62,6 +62,14 @@
             margin-top: 10px;
             display: none;
         }
+        .log {
+            color: #27ae60;
+            margin-top: 10px;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 150px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -76,94 +84,223 @@
             <div class="label">Deobfuscated Code:</div>
             <textarea id="outputCode" readonly placeholder="Deobfuscated code will appear here..."></textarea>
             <div id="errorMessage" class="error">An error occurred during deobfuscation. Please check your input code.</div>
+            <div id="logMessage" class="log"></div>
         </div>
     </div>
 
     <script>
+        let transformationLog = [];
+
         function deobfuscate() {
             const inputCode = document.getElementById('inputCode').value.trim();
             const outputCodeElement = document.getElementById('outputCode');
             const errorMessageElement = document.getElementById('errorMessage');
+            const logMessageElement = document.getElementById('logMessage');
 
             if (!inputCode) {
                 errorMessageElement.style.display = 'block';
                 errorMessageElement.textContent = 'Please enter some code to deobfuscate.';
+                logMessageElement.textContent = '';
                 outputCodeElement.value = '';
                 return;
             }
 
             try {
                 errorMessageElement.style.display = 'none';
+                transformationLog = [];
                 const deobfuscated = processMoonSecV3(inputCode);
                 outputCodeElement.value = deobfuscated;
+                logMessageElement.textContent = transformationLog.length > 0 
+                    ? "Transformations Applied:\n" + transformationLog.join('\n')
+                    : "No significant transformations applied. The code may use advanced obfuscation (e.g., VM emulation) beyond this tool's scope.";
             } catch (e) {
                 errorMessageElement.style.display = 'block';
                 errorMessageElement.textContent = 'Error during deobfuscation: ' + e.message;
+                logMessageElement.textContent = '';
                 outputCodeElement.value = '';
             }
         }
 
         function processMoonSecV3(code) {
-            // Handle very long scripts by limiting processing if necessary
             if (code.length > 1000000) {
                 throw new Error("Input code is too long. Please limit to 1MB or less for processing.");
             }
 
-            // Step 1: Basic string decryption
+            // Step 1: Decode strings (multiple encoding methods)
             code = decryptStrings(code);
 
-            // Step 2: Simplify variable names
-            code = simplifyVariables(code);
+            // Step 2: Simplify variable and function names
+            code = simplifyNames(code);
 
-            // Step 3: Unwrap simple control flow obfuscation
-            code = unwrapControlFlow(code);
+            // Step 3: Unwrap control flow and remove junk code
+            code = normalizeControlFlow(code);
 
-            // Step 4: Clean up formatting for readability
+            // Step 4: Simplify table indirections and constant folding
+            code = simplifyStructures(code);
+
+            // Step 5: Basic VM instruction decoding (if applicable)
+            code = decodeBasicVM(code);
+
+            // Step 6: Final formatting
             code = formatCode(code);
 
             return code;
         }
 
         function decryptStrings(code) {
-            // Detect and decode string tables or byte arrays
-            const stringTablePattern = /\{(?:\d+,?\s*)+\}/g;
-            return code.replace(stringTablePattern, (match) => {
+            let newCode = code;
+            // Method 1: Byte array tables {104, 101, 108, 108, 111} -> "hello"
+            const byteTablePattern = /\{(?:\d+,?\s*){2,}\}/g;
+            newCode = newCode.replace(byteTablePattern, (match) => {
                 try {
                     const numbers = match.match(/\d+/g).map(Number);
                     let decoded = '';
                     for (let num of numbers) {
-                        decoded += String.fromCharCode(num);
+                        if (num >= 0 && num <= 255) decoded += String.fromCharCode(num);
                     }
-                    return `"${decoded}"`;
+                    if (decoded) {
+                        transformationLog.push(`- Decoded byte table: ${match.slice(0, 20)}${match.length > 20 ? '...' : ''} -> "${decoded.slice(0, 20)}${decoded.length > 20 ? '...' : ''}"`);
+                        return `"${decoded}"`;
+                    }
+                    return match;
                 } catch (e) {
                     return match;
                 }
             });
-        }
 
-        function simplifyVariables(code) {
-            // Replace long variable names with shorter ones
-            const varPattern = /[a-zA-Z_][a-zA-Z0-9_]{10,}/g;
-            const usedVars = new Map();
-            let varCounter = 1;
-
-            return code.replace(varPattern, (match) => {
-                if (!usedVars.has(match)) {
-                    usedVars.set(match, `v${varCounter++}`);
+            // Method 2: Bitwise XOR or other operations for string chars
+            const bitwisePattern = /\(\s*(\d+)\s*~\s*(\d+)\s*\)/g;
+            newCode = newCode.replace(bitwisePattern, (match, a, b) => {
+                try {
+                    const decodedChar = String.fromCharCode(parseInt(a) ^ parseInt(b));
+                    transformationLog.push(`- Decoded bitwise operation: ${match} -> "${decodedChar}"`);
+                    return `"${decodedChar}"`;
+                } catch (e) {
+                    return match;
                 }
-                return usedVars.get(match);
             });
+
+            // Method 3: String concatenation from obfuscated chunks
+            const concatPattern = /"([^"]*)"\s*\.\.\s*"([^"]*)"/g;
+            newCode = newCode.replace(concatPattern, (match, a, b) => {
+                try {
+                    const combined = a + b;
+                    transformationLog.push(`- Combined string concatenation: ${match.slice(0, 30)}... -> "${combined.slice(0, 30)}..."`);
+                    return `"${combined}"`;
+                } catch (e) {
+                    return match;
+                }
+            });
+
+            return newCode;
         }
 
-        function unwrapControlFlow(code) {
-            // Simplify redundant control flow
-            const redundantLoopPattern = /while\s+true\s+do\s+break\s+end/g;
-            code = code.replace(redundantLoopPattern, '');
-            return code;
+        function simplifyNames(code) {
+            // Simplify long variable and function names
+            const namePattern = /[a-zA-Z_][a-zA-Z0-9_]{8,}/g;
+            const usedNames = new Map();
+            let counter = 1;
+
+            const newCode = code.replace(namePattern, (match) => {
+                if (!usedNames.has(match)) {
+                    usedNames.set(match, `id${counter++}`);
+                    transformationLog.push(`- Renamed identifier: ${match} -> ${usedNames.get(match)}`);
+                }
+                return usedNames.get(match);
+            });
+
+            return newCode;
+        }
+
+        function normalizeControlFlow(code) {
+            let newCode = code;
+            // Remove redundant loops and conditions
+            const redundantLoopPattern = /(?:while|if)\s+true\s+(?:do|then)\s*break\s*end/g;
+            newCode = newCode.replace(redundantLoopPattern, () => {
+                transformationLog.push(`- Removed redundant control structure: e.g., "while true do break end"`);
+                return '';
+            });
+
+            // Simplify nested function wrappers
+            const wrapperPattern = /\(function\s*\(\s*\)\s*return\s+([\w\d]+)\s*end\s*\)\(\s*\)/g;
+            newCode = newCode.replace(wrapperPattern, (match, value) => {
+                transformationLog.push(`- Unwrapped function return: ${match.slice(0, 30)}... -> ${value}`);
+                return value;
+            });
+
+            // Flatten simple conditional jumps
+            const condJumpPattern = /if\s+([\w\d]+)\s+then\s+return\s+([\w\d]+)\s+end/g;
+            newCode = newCode.replace(condJumpPattern, (match, cond, ret) => {
+                transformationLog.push(`- Simplified conditional return: ${match.slice(0, 30)}... -> return statement`);
+                return `if ${cond} then return ${ret}; end`;
+            });
+
+            return newCode;
+        }
+
+        function simplifyStructures(code) {
+            let newCode = code;
+            // Simplify table accesses like _G["key"] or t[1][2]
+            const globalAccessPattern = /_G(?:\s*\[\s*["']?([\w\d]+)["']?\s*\]){1,}/g;
+            newCode = newCode.replace(globalAccessPattern, (match, key) => {
+                transformationLog.push(`- Simplified global access: ${match} -> ${key}`);
+                return key;
+            });
+
+            // Fold constants where possible (e.g., 5 + 3 -> 8)
+            const mathPattern = /(\d+)\s*([\+\-\*\/])\s*(\d+)/g;
+            newCode = newCode.replace(mathPattern, (match, a, op, b) => {
+                try {
+                    a = parseFloat(a);
+                    b = parseFloat(b);
+                    let result;
+                    if (op === '+') result = a + b;
+                    else if (op === '-') result = a - b;
+                    else if (op === '*') result = a * b;
+                    else if (op === '/') result = b !== 0 ? a / b : match;
+                    if (result !== match) {
+                        transformationLog.push(`- Folded constant: ${match} -> ${result}`);
+                        return result.toString();
+                    }
+                    return match;
+                } catch (e) {
+                    return match;
+                }
+            });
+
+            // Remove empty tables or unused assignments
+            const emptyTablePattern = /local\s+[\w\d]+\s*=\s*\{\s*\}\s*;/g;
+            newCode = newCode.replace(emptyTablePattern, () => {
+                transformationLog.push(`- Removed empty table assignment`);
+                return '';
+            });
+
+            return newCode;
+        }
+
+        function decodeBasicVM(code) {
+            // Basic attempt to detect and simplify VM dispatch loops
+            let newCode = code;
+            // Look for common VM patterns (e.g., giant table of numbers as instructions)
+            const vmTablePattern = /local\s+[\w\d]+\s*=\s*\{\s*(\d+\s*,\s*){5,}\s*\d+\s*\}\s*;/g;
+            if (vmTablePattern.test(newCode)) {
+                transformationLog.push(`- Detected possible VM instruction table; unable to fully decode without runtime context. Simplified structure.`);
+                newCode = newCode.replace(vmTablePattern, (match) => {
+                    return `-- Simplified VM instruction table (original length: ${match.length})\nlocal vm_instructions = {/*...data...*/};`;
+                });
+                
+                // Attempt to simplify VM loop structures
+                const vmLoopPattern = /while\s+[\w\d]+\s+do\s+local\s+[\w\d]+\s*=\s*[\w\d]+\[[\w\d]+\]\s*;.*?(?:break|end)/gs;
+                newCode = newCode.replace(vmLoopPattern, (match) => {
+                    transformationLog.push(`- Simplified suspected VM dispatch loop`);
+                    return `-- Simplified VM loop\n-- Original code omitted for readability`;
+                });
+            }
+
+            return newCode;
         }
 
         function formatCode(code) {
-            // Basic formatting with safeguard for negative indentation
             let formatted = '';
             let indentLevel = 0;
             const indentSize = 2;
@@ -173,22 +310,23 @@
                 line = line.trim();
                 if (!line) continue;
 
-                // Decrease indent for closing blocks, but ensure it doesn't go negative
-                if (line.includes('end') || line.includes('else') || line.includes('elseif')) {
+                if (line.match(/\b(end|else|elseif)\b/)) {
                     indentLevel = Math.max(0, indentLevel - 1);
                 }
 
-                // Add indentation, prevent invalid count errors
                 try {
                     formatted += ' '.repeat(indentLevel * indentSize) + line + '\n';
                 } catch (e) {
-                    formatted += line + '\n'; // Fallback if repeat fails
+                    formatted += line + '\n';
                 }
 
-                // Increase indent for opening blocks
-                if (line.includes('do') || line.includes('then') || line.includes('function')) {
+                if (line.match(/\b(do|then|function)\b/)) {
                     indentLevel++;
                 }
+            }
+
+            if (formatted !== code) {
+                transformationLog.push(`- Applied code formatting for readability`);
             }
 
             return formatted;
