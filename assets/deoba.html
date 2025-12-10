@@ -3,130 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoonSec v3 Deobfuscator</title>
+    <title>MoonSec V3 Deobfuscator</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e1e; color: #d4d4d4; margin: 0; padding: 20px; display: flex; flex-direction: column; height: 100vh; }
-        .container { display: flex; flex-grow: 1; gap: 20px; }
-        .panel { flex: 1; display: flex; flex-direction: column; background-color: #252526; border: 1px solid #3e3e42; border-radius: 8px; overflow: hidden; }
-        .panel-header { background-color: #2d2d30; padding: 10px 15px; font-weight: bold; border-bottom: 1px solid #3e3e42; }
-        textarea { flex-grow: 1; padding: 15px; border: none; background-color: #1e1e1e; color: #d4d4d4; font-family: 'Consolas', 'Monaco', monospace; font-size: 14px; resize: none; outline: none; }
-        .controls { margin-bottom: 20px; text-align: center; }
-        button { background-color: #007acc; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 5px; cursor: pointer; transition: background-color 0.2s; }
-        button:hover { background-color: #005a9e; }
-        button:disabled { background-color: #555; cursor: not-allowed; }
-        .log { height: 150px; background-color: #252526; border: 1px solid #3e3e42; border-radius: 8px; padding: 10px; margin-top: 20px; overflow-y: auto; font-family: 'Consolas', 'Monaco', monospace; font-size: 12px; white-space: pre-wrap; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .input-section, .output-section {
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .error {
+            color: #e74c3c;
+            margin-top: 10px;
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <h1>MoonSec v3 Deobfuscator</h1>
-    <div class="controls"><button id="deobfuscateBtn">Deobfuscate Script</button></div>
     <div class="container">
-        <div class="panel"><div class="panel-header">Obfuscated Input</div><textarea id="inputScript" placeholder="Paste your MoonSec v3 obfuscated Lua script here..."></textarea></div>
-        <div class="panel"><div class="panel-header">Deobfuscated Output</div><textarea id="outputScript" readonly placeholder="The deobfuscated script will appear here..."></textarea></div>
+        <h1>MoonSec V3 Lua Deobfuscator</h1>
+        <div class="input-section">
+            <div class="label">Paste Obfuscated Lua Code (MoonSec V3):</div>
+            <textarea id="inputCode" placeholder="Paste your obfuscated Lua code here..."></textarea>
+        </div>
+        <button onclick="deobfuscate()">Deobfuscate</button>
+        <div class="output-section">
+            <div class="label">Deobfuscated Code:</div>
+            <textarea id="outputCode" readonly placeholder="Deobfuscated code will appear here..."></textarea>
+            <div id="errorMessage" class="error">An error occurred during deobfuscation. Please check your input code.</div>
+        </div>
     </div>
-    <div id="log" class="log">Log output will appear here...</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fengari-web/0.1.4/fengari-web.js"></script>
     <script>
-        const deobfuscateBtn = document.getElementById('deobfuscateBtn');
-        const inputScript = document.getElementById('inputScript');
-        const outputScript = document.getElementById('outputScript');
-        const logDiv = document.getElementById('log');
+        function deobfuscate() {
+            const inputCode = document.getElementById('inputCode').value.trim();
+            const outputCodeElement = document.getElementById('outputCode');
+            const errorMessageElement = document.getElementById('errorMessage');
 
-        function log(message) { logDiv.textContent += message + '\n'; logDiv.scrollTop = logDiv.scrollHeight; }
-
-        deobfuscateBtn.addEventListener('click', () => {
-            const obfuscatedCode = inputScript.value;
-            if (!obfuscatedCode.trim()) { log('[ERROR] Input script is empty.'); return; }
-            deobfuscateBtn.disabled = true; logDiv.textContent = ''; outputScript.value = '';
-            log('[INFO] Starting deobfuscation...');
+            if (!inputCode) {
+                errorMessageElement.style.display = 'block';
+                errorMessageElement.textContent = 'Please enter some code to deobfuscate.';
+                outputCodeElement.value = '';
+                return;
+            }
 
             try {
-                const luaState = fengari.lauxlib.luaL_newstate();
-                fengari.lualib.luaL_openlibs(luaState);
-
-                // Capture prints from the Lua script into a JS array
-                const capturedStrings = [];
-                fengari.lua.lua_pushjsfunction(luaState, function(L) {
-                    const output = fengari.lua.lua_tojsstring(L, 1);
-                    capturedStrings.push(output);
-                    return 0;
-                });
-                fengari.lua.lua_setglobal(luaState, "print");
-
-                // Execute the script to populate the environment
-                const status = fengari.lauxlib.luaL_dostring(luaState, obfuscatedCode);
-                if (status !== fengari.lua.LUA_OK) {
-                    const errorMsg = fengari.lua.lua_tojsstring(luaState, -1);
-                    log(`[ERROR] Lua execution failed: ${errorMsg}`);
-                    fengari.lua.lua_close(luaState);
-                    deobfuscateBtn.disabled = false;
-                    return;
-                }
-                log('[INFO] Script executed. Global environment populated.');
-
-                // --- CORE DEOBFUSCATION LOGIC ---
-                let deobfuscatedCode = obfuscatedCode;
-                log('[INFO] Starting pattern replacement...');
-
-                // 1. Replace simple string table calls: string_table[123]
-                // This regex finds patterns like someVar[123] and replaces them if the string was captured.
-                const stringTableRegex = /(\w+)$$(\d+)$$/g;
-                deobfuscatedCode = deobfuscatedCode.replace(stringTableRegex, (match, tableName, index) => {
-                    const stringIndex = parseInt(index, 10);
-                    if (capturedStrings[stringIndex] !== undefined) {
-                        log(`[REPLACE] Found string table call: ${match} -> "${capturedStrings[stringIndex]}"`);
-                        return `"${capturedStrings[stringIndex]}"`;
-                    }
-                    return match; // No replacement found
-                });
-
-                // 2. Replace function calls: someFunc(123, "arg")
-                // This is more complex. For a real tool, you'd parse the AST.
-                // This regex is a simplified approach.
-                const functionCallRegex = /(\w+)\s*$$\s*(\d+)\s*(?:,\s*["']([^^"']+)["']\s*)?$$/g;
-                deobfuscatedCode = deobfuscatedCode.replace(functionCallRegex, (match, funcName, numIndex, strArg) => {
-                    const funcIndex = parseInt(numIndex, 10);
-                    // Check if this function name corresponds to a known deobfuscator function
-                    // In MoonSec, often a single function handles all string/bytecode decoding.
-                    // Let's assume if we call the function with the index, we get the string back.
-                    // We'll try to call it in our Lua state.
-                    fengari.lua.lua_getglobal(luaState, funcName);
-                    fengari.lua.lua_pushjsstring(luaState, numIndex);
-                    if (strArg) {
-                        fengari.lua.lua_pushjsstring(luaState, strArg);
-                    }
-                    const callStatus = fengari.lua.lua_pcallk(luaState, strArg ? 2 : 1, 1, 0, 0, null);
-
-                    if (callStatus === fengari.lua.LUA_OK) {
-                        const result = fengari.lua.lua_tojsstring(luaState, -1);
-                        fengari.lua.lua_pop(luaState, 1); // Pop result
-                        if (result) {
-                            log(`[REPLACE] Found function call: ${match} -> "${result}"`);
-                            return `"${result}"`;
-                        }
-                    } else {
-                        fengari.lua.lua_pop(luaState, 1); // Pop error message
-                    }
-                    return match; // No replacement found
-                });
-
-                // 3. Clean up common obfuscator artifacts
-                log('[INFO] Cleaning up garbage code...');
-                deobfuscatedCode = deobfuscatedCode.replace(/local\s+\w+\s*=\s*function$$$$\s*return\s*function$$$$\s*end\s*end/g, ''); // Dummy wrappers
-                deobfuscatedCode = deobfuscatedCode.replace(/;\s*end;?\s*end/g, '; end'); // Extra ends
-                deobfuscatedCode = deobfuscatedCode.replace(/do\s+end\s*/g, ''); // Empty do blocks
-                
-                log('[SUCCESS] Deobfuscation complete.');
-                outputScript.value = deobfuscatedCode;
-                fengari.lua.lua_close(luaState);
-
+                errorMessageElement.style.display = 'none';
+                const deobfuscated = processMoonSecV3(inputCode);
+                outputCodeElement.value = deobfuscated;
             } catch (e) {
-                log(`[CRITICAL ERROR] JavaScript Exception: ${e.message}`);
-            } finally {
-                deobfuscateBtn.disabled = false;
+                errorMessageElement.style.display = 'block';
+                errorMessageElement.textContent = 'Error during deobfuscation: ' + e.message;
+                outputCodeElement.value = '';
             }
-        });
+        }
+
+        function processMoonSecV3(code) {
+            // Step 1: Basic string decryption (MoonSec often encodes strings as byte arrays or tables)
+            code = decryptStrings(code);
+
+            // Step 2: Simplify variable names (MoonSec uses random, long variable names)
+            code = simplifyVariables(code);
+
+            // Step 3: Unwrap simple control flow obfuscation (e.g., unnecessary jumps or loops)
+            code = unwrapControlFlow(code);
+
+            // Step 4: Clean up formatting for readability
+            code = formatCode(code);
+
+            return code;
+        }
+
+        function decryptStrings(code) {
+            // This function attempts to detect and decode string tables or byte arrays
+            // MoonSec V3 often stores strings as tables like {104, 101, 108, 108, 111} for "hello"
+            const stringTablePattern = /\{(?:\d+,?\s*)+\}/g;
+            return code.replace(stringTablePattern, (match) => {
+                try {
+                    // Extract numbers from the table
+                    const numbers = match.match(/\d+/g).map(Number);
+                    // Convert to characters
+                    let decoded = '';
+                    for (let num of numbers) {
+                        decoded += String.fromCharCode(num);
+                    }
+                    return `"${decoded}"`;
+                } catch (e) {
+                    return match; // Return unchanged if decoding fails
+                }
+            });
+        }
+
+        function simplifyVariables(code) {
+            // MoonSec uses long, random variable names. Replace them with shorter ones like v1, v2, etc.
+            const varPattern = /[a-zA-Z_][a-zA-Z0-9_]{10,}/g; // Match long variable names (10+ chars)
+            const usedVars = new Set();
+            let varCounter = 1;
+
+            return code.replace(varPattern, (match) => {
+                if (usedVars.has(match)) return match;
+                const newVar = `v${varCounter++}`;
+                usedVars.add(match);
+                // Return the new short name
+                return newVar;
+            });
+        }
+
+        function unwrapControlFlow(code) {
+            // Simplify redundant control flow (e.g., unnecessary while loops or if statements)
+            // This is a basic approach; MoonSec V3 often uses VM-based control flow which is harder to reverse
+            const redundantLoopPattern = /while\s+true\s+do\s+break\s+end/g;
+            code = code.replace(redundantLoopPattern, '');
+            return code;
+        }
+
+        function formatCode(code) {
+            // Basic formatting to make the code readable (indentation and line breaks)
+            let formatted = '';
+            let indentLevel = 0;
+            const indentSize = 2;
+            const lines = code.split('\n');
+
+            for (let line of lines) {
+                line = line.trim();
+                if (!line) continue;
+
+                if (line.includes('end') || line.includes('else') || line.includes('elseif')) {
+                    indentLevel--;
+                }
+
+                formatted += ' '.repeat(indentLevel * indentSize) + line + '\n';
+
+                if (line.includes('do') || line.includes('then') || line.includes('function')) {
+                    indentLevel++;
+                }
+            }
+
+            return formatted;
+        }
     </script>
 </body>
 </html>
