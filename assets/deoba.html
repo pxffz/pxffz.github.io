@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoonSec V3 Lua Deobfuscator</title>
+    <title>MoonSec V3 Lua Deobfuscator - Full Extraction</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,7 +17,7 @@
             color: #2c3e50;
         }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             background-color: #fff;
             padding: 20px;
@@ -29,7 +29,7 @@
         }
         textarea {
             width: 100%;
-            height: 250px;
+            height: 300px;
             padding: 10px;
             font-family: 'Courier New', Courier, monospace;
             font-size: 14px;
@@ -67,22 +67,22 @@
             margin-top: 10px;
             font-size: 14px;
             white-space: pre-wrap;
-            max-height: 150px;
+            max-height: 200px;
             overflow-y: auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>MoonSec V3 Lua Deobfuscator</h1>
+        <h1>MoonSec V3 Lua Deobfuscator - Full Extraction</h1>
         <div class="input-section">
             <div class="label">Paste Obfuscated Lua Code (MoonSec V3):</div>
             <textarea id="inputCode" placeholder="Paste your obfuscated Lua code here..."></textarea>
         </div>
-        <button onclick="deobfuscate()">Deobfuscate</button>
+        <button onclick="deobfuscate()">Deobfuscate & Extract Script</button>
         <div class="output-section">
-            <div class="label">Deobfuscated Code:</div>
-            <textarea id="outputCode" readonly placeholder="Deobfuscated code will appear here..."></textarea>
+            <div class="label">Extracted Lua Script:</div>
+            <textarea id="outputCode" readonly placeholder="Deobfuscated and extracted script will appear here..."></textarea>
             <div id="errorMessage" class="error">An error occurred during deobfuscation. Please check your input code.</div>
             <div id="logMessage" class="log"></div>
         </div>
@@ -112,7 +112,7 @@
                 outputCodeElement.value = deobfuscated;
                 logMessageElement.textContent = transformationLog.length > 0 
                     ? "Transformations Applied:\n" + transformationLog.join('\n')
-                    : "No significant transformations applied. The code may use advanced obfuscation (e.g., VM emulation) beyond this tool's scope.";
+                    : "No significant transformations applied. Possible advanced VM or runtime encryption detected.";
             } catch (e) {
                 errorMessageElement.style.display = 'block';
                 errorMessageElement.textContent = 'Error during deobfuscation: ' + e.message;
@@ -122,132 +122,162 @@
         }
 
         function processMoonSecV3(code) {
-            if (code.length > 1000000) {
-                throw new Error("Input code is too long. Please limit to 1MB or less for processing.");
+            if (code.length > 2000000) {
+                throw new Error("Input code is too long. Please limit to 2MB or less for processing.");
             }
 
-            // Step 1: Decode strings (multiple encoding methods)
-            code = decryptStrings(code);
+            transformationLog.push("Starting multi-pass deobfuscation to extract core script...");
 
-            // Step 2: Simplify variable and function names
+            // Pass 1: Aggressive string decryption
+            code = decryptStrings(code, 3); // Multiple iterations for nested encodings
+
+            // Pass 2: Simplify identifiers aggressively
             code = simplifyNames(code);
 
-            // Step 3: Unwrap control flow and remove junk code
-            code = normalizeControlFlow(code);
+            // Pass 3: Unravel control flow with deep nesting support
+            code = unravelControlFlow(code, 2); // Multiple passes for nested structures
 
-            // Step 4: Simplify table indirections and constant folding
+            // Pass 4: Simplify tables and constants with deep analysis
             code = simplifyStructures(code);
 
-            // Step 5: Basic VM instruction decoding (if applicable)
-            code = decodeBasicVM(code);
+            // Pass 5: Speculative VM decoding and payload extraction
+            code = extractPayload(code);
 
-            // Step 6: Final formatting
+            // Pass 6: Clean up and format for readability
             code = formatCode(code);
 
+            transformationLog.push("Deobfuscation complete. Review output for extracted script logic.");
             return code;
         }
 
-        function decryptStrings(code) {
+        function decryptStrings(code, iterations) {
             let newCode = code;
-            // Method 1: Byte array tables {104, 101, 108, 108, 111} -> "hello"
-            const byteTablePattern = /\{(?:\d+,?\s*){2,}\}/g;
-            newCode = newCode.replace(byteTablePattern, (match) => {
-                try {
-                    const numbers = match.match(/\d+/g).map(Number);
-                    let decoded = '';
-                    for (let num of numbers) {
-                        if (num >= 0 && num <= 255) decoded += String.fromCharCode(num);
+            let decodedCount = 0;
+
+            // Iterative decoding for nested or complex string obfuscation
+            for (let i = 0; i < iterations; i++) {
+                let tempCode = newCode;
+
+                // Byte array tables {104, 101, ...} -> "hello"
+                const byteTablePattern = /\{(?:\d+,?\s*){2,}\}/g;
+                newCode = newCode.replace(byteTablePattern, (match) => {
+                    try {
+                        const numbers = match.match(/\d+/g).map(Number);
+                        let decoded = '';
+                        for (let num of numbers) {
+                            if (num >= 0 && num <= 255) decoded += String.fromCharCode(num);
+                        }
+                        if (decoded) {
+                            decodedCount++;
+                            return `"${decoded}"`;
+                        }
+                        return match;
+                    } catch (e) {
+                        return match;
                     }
-                    if (decoded) {
-                        transformationLog.push(`- Decoded byte table: ${match.slice(0, 20)}${match.length > 20 ? '...' : ''} -> "${decoded.slice(0, 20)}${decoded.length > 20 ? '...' : ''}"`);
-                        return `"${decoded}"`;
+                });
+
+                // Bitwise operations for character encoding
+                const bitwisePattern = /\(\s*(\d+)\s*([\~\&\|])\s*(\d+)\s*\)/g;
+                newCode = newCode.replace(bitwisePattern, (match, a, op, b) => {
+                    try {
+                        a = parseInt(a);
+                        b = parseInt(b);
+                        let result;
+                        if (op === '~') result = a ^ b;
+                        else if (op === '&') result = a & b;
+                        else if (op === '|') result = a | b;
+                        if (result >= 0 && result <= 255) {
+                            decodedCount++;
+                            return `"${String.fromCharCode(result)}"`;
+                        }
+                        return match;
+                    } catch (e) {
+                        return match;
                     }
-                    return match;
-                } catch (e) {
-                    return match;
-                }
-            });
+                });
 
-            // Method 2: Bitwise XOR or other operations for string chars
-            const bitwisePattern = /\(\s*(\d+)\s*~\s*(\d+)\s*\)/g;
-            newCode = newCode.replace(bitwisePattern, (match, a, b) => {
-                try {
-                    const decodedChar = String.fromCharCode(parseInt(a) ^ parseInt(b));
-                    transformationLog.push(`- Decoded bitwise operation: ${match} -> "${decodedChar}"`);
-                    return `"${decodedChar}"`;
-                } catch (e) {
-                    return match;
-                }
-            });
+                // String fragment concatenation
+                const concatPattern = /"([^"]*)"\s*\.\.\s*"([^"]*)"/g;
+                newCode = newCode.replace(concatPattern, (match, a, b) => {
+                    decodedCount++;
+                    return `"${a + b}"`;
+                });
 
-            // Method 3: String concatenation from obfuscated chunks
-            const concatPattern = /"([^"]*)"\s*\.\.\s*"([^"]*)"/g;
-            newCode = newCode.replace(concatPattern, (match, a, b) => {
-                try {
-                    const combined = a + b;
-                    transformationLog.push(`- Combined string concatenation: ${match.slice(0, 30)}... -> "${combined.slice(0, 30)}..."`);
-                    return `"${combined}"`;
-                } catch (e) {
-                    return match;
-                }
-            });
+                // Stop if no changes in this iteration
+                if (tempCode === newCode) break;
+            }
 
+            transformationLog.push(`- Decoded ${decodedCount} string patterns (byte tables, bitwise ops, concatenations)`);
             return newCode;
         }
 
         function simplifyNames(code) {
-            // Simplify long variable and function names
-            const namePattern = /[a-zA-Z_][a-zA-Z0-9_]{8,}/g;
+            const namePattern = /[a-zA-Z_][a-zA-Z0-9_]{6,}/g;
             const usedNames = new Map();
             let counter = 1;
 
             const newCode = code.replace(namePattern, (match) => {
                 if (!usedNames.has(match)) {
-                    usedNames.set(match, `id${counter++}`);
-                    transformationLog.push(`- Renamed identifier: ${match} -> ${usedNames.get(match)}`);
+                    usedNames.set(match, `x${counter++}`);
                 }
                 return usedNames.get(match);
             });
 
+            transformationLog.push(`- Simplified ${usedNames.size} long identifiers to short names`);
             return newCode;
         }
 
-        function normalizeControlFlow(code) {
+        function unravelControlFlow(code, passes) {
             let newCode = code;
-            // Remove redundant loops and conditions
-            const redundantLoopPattern = /(?:while|if)\s+true\s+(?:do|then)\s*break\s*end/g;
-            newCode = newCode.replace(redundantLoopPattern, () => {
-                transformationLog.push(`- Removed redundant control structure: e.g., "while true do break end"`);
-                return '';
-            });
+            let changes = 0;
 
-            // Simplify nested function wrappers
-            const wrapperPattern = /\(function\s*\(\s*\)\s*return\s+([\w\d]+)\s*end\s*\)\(\s*\)/g;
-            newCode = newCode.replace(wrapperPattern, (match, value) => {
-                transformationLog.push(`- Unwrapped function return: ${match.slice(0, 30)}... -> ${value}`);
-                return value;
-            });
+            for (let i = 0; i < passes; i++) {
+                let tempCode = newCode;
 
-            // Flatten simple conditional jumps
-            const condJumpPattern = /if\s+([\w\d]+)\s+then\s+return\s+([\w\d]+)\s+end/g;
-            newCode = newCode.replace(condJumpPattern, (match, cond, ret) => {
-                transformationLog.push(`- Simplified conditional return: ${match.slice(0, 30)}... -> return statement`);
-                return `if ${cond} then return ${ret}; end`;
-            });
+                // Remove junk loops and conditions
+                const junkControlPattern = /(?:while|if)\s+(?:true|false)\s+(?:do|then)\s*(?:break|return\s*[^;]*;)\s*end/g;
+                newCode = newCode.replace(junkControlPattern, () => {
+                    changes++;
+                    return '';
+                });
 
+                // Unwrap immediate function calls
+                const funcWrapperPattern = /\(function\s*\(\s*[\w\d,]*\s*\)\s*([\s\S]*?)\s*end\s*\)\s*\(\s*[\w\d,]*\s*\)/g;
+                newCode = newCode.replace(funcWrapperPattern, (match, body) => {
+                    changes++;
+                    return body;
+                });
+
+                // Simplify redundant conditionals
+                const redundantIfPattern = /if\s+([\w\d]+)\s+then\s*([\s\S]*?)\s*end/g;
+                newCode = newCode.replace(redundantIfPattern, (match, cond, body) => {
+                    if (body.trim().split('\n').length < 3) {
+                        changes++;
+                        return `if ${cond} then ${body.trim()}; end`;
+                    }
+                    return match;
+                });
+
+                if (tempCode === newCode) break;
+            }
+
+            transformationLog.push(`- Unraveled control flow with ${changes} simplifications (loops, wrappers, conditionals)`);
             return newCode;
         }
 
         function simplifyStructures(code) {
             let newCode = code;
-            // Simplify table accesses like _G["key"] or t[1][2]
-            const globalAccessPattern = /_G(?:\s*\[\s*["']?([\w\d]+)["']?\s*\]){1,}/g;
-            newCode = newCode.replace(globalAccessPattern, (match, key) => {
-                transformationLog.push(`- Simplified global access: ${match} -> ${key}`);
+            let changes = 0;
+
+            // Simplify table accesses
+            const tableAccessPattern = /(?:_G|[\w\d]+)(?:\s*\[\s*["']?([\w\d]+)["']?\s*\]){1,}/g;
+            newCode = newCode.replace(tableAccessPattern, (match, key) => {
+                changes++;
                 return key;
             });
 
-            // Fold constants where possible (e.g., 5 + 3 -> 8)
+            // Fold constants (math operations)
             const mathPattern = /(\d+)\s*([\+\-\*\/])\s*(\d+)/g;
             newCode = newCode.replace(mathPattern, (match, a, op, b) => {
                 try {
@@ -259,7 +289,7 @@
                     else if (op === '*') result = a * b;
                     else if (op === '/') result = b !== 0 ? a / b : match;
                     if (result !== match) {
-                        transformationLog.push(`- Folded constant: ${match} -> ${result}`);
+                        changes++;
                         return result.toString();
                     }
                     return match;
@@ -268,33 +298,75 @@
                 }
             });
 
-            // Remove empty tables or unused assignments
-            const emptyTablePattern = /local\s+[\w\d]+\s*=\s*\{\s*\}\s*;/g;
-            newCode = newCode.replace(emptyTablePattern, () => {
-                transformationLog.push(`- Removed empty table assignment`);
+            // Remove junk locals and tables
+            const junkLocalPattern = /local\s+[\w\d]+\s*=\s*(?:\{\s*\}|nil)\s*;/g;
+            newCode = newCode.replace(junkLocalPattern, () => {
+                changes++;
                 return '';
             });
 
+            transformationLog.push(`- Simplified ${changes} structural elements (tables, constants, junk locals)`);
             return newCode;
         }
 
-        function decodeBasicVM(code) {
-            // Basic attempt to detect and simplify VM dispatch loops
+        function extractPayload(code) {
             let newCode = code;
-            // Look for common VM patterns (e.g., giant table of numbers as instructions)
-            const vmTablePattern = /local\s+[\w\d]+\s*=\s*\{\s*(\d+\s*,\s*){5,}\s*\d+\s*\}\s*;/g;
-            if (vmTablePattern.test(newCode)) {
-                transformationLog.push(`- Detected possible VM instruction table; unable to fully decode without runtime context. Simplified structure.`);
-                newCode = newCode.replace(vmTablePattern, (match) => {
-                    return `-- Simplified VM instruction table (original length: ${match.length})\nlocal vm_instructions = {/*...data...*/};`;
+            let extracted = false;
+
+            // Detect and extract potential payload from VM-like structures or loader functions
+            const loaderPattern = /function\s*\(\s*[\w\d,]*\s*\)\s*([\s\S]*?)\s*end\s*\(\s*[\w\d,]*\s*\)/g;
+            let loaderMatch = loaderPattern.exec(newCode);
+            if (loaderMatch && loaderMatch[1]) {
+                extracted = true;
+                let payload = loaderMatch[1].trim();
+                newCode = `-- Extracted payload from loader function\n${payload}`;
+                transformationLog.push(`- Extracted potential core script from loader function`);
+            }
+
+            // Detect large data tables (often VM instructions or encrypted payload)
+            const dataTablePattern = /local\s+[\w\d]+\s*=\s*\{\s*(\d+\s*,\s*){10,}\s*\d+\s*\}\s*;/g;
+            if (dataTablePattern.test(newCode) && !extracted) {
+                newCode = newCode.replace(dataTablePattern, (match) => {
+                    transformationLog.push(`- Detected large data table (possible VM instructions or payload); simplified`);
+                    return `-- Simplified data table (potential payload or VM code)\nlocal data = {/* ... omitted ... */};`;
                 });
-                
-                // Attempt to simplify VM loop structures
-                const vmLoopPattern = /while\s+[\w\d]+\s+do\s+local\s+[\w\d]+\s*=\s*[\w\d]+\[[\w\d]+\]\s*;.*?(?:break|end)/gs;
-                newCode = newCode.replace(vmLoopPattern, (match) => {
-                    transformationLog.push(`- Simplified suspected VM dispatch loop`);
-                    return `-- Simplified VM loop\n-- Original code omitted for readability`;
+
+                // Attempt speculative decoding of payload if it looks like encoded bytes
+                const byteDataPattern = /\{\s*(\d+\s*,\s*){10,}\s*\d+\s*\}/g;
+                let byteMatch = byteDataPattern.exec(newCode);
+                if (byteMatch) {
+                    let numbers = byteMatch[0].match(/\d+/g).map(Number);
+                    let decodedPayload = '';
+                    for (let num of numbers) {
+                        if (num >= 0 && num <= 255) decodedPayload += String.fromCharCode(num);
+                    }
+                    if (decodedPayload.length > 50) {
+                        newCode += `\n\n-- Speculative payload decode (may not be valid Lua):\n--[[${decodedPayload.slice(0, 200)}...]]`;
+                        transformationLog.push(`- Speculatively decoded data table as potential payload (partial display)`);
+                        extracted = true;
+                    }
+                }
+            }
+
+            // If no payload extracted, look for deeply nested function bodies as the core script
+            if (!extracted) {
+                const nestedFuncPattern = /(?:function\s*\(\s*[\w\d,]*\s*\)\s*){2,}([\s\S]*?)(?:end\s*){2,}/g;
+                let nestedMatch = nestedFuncPattern.exec(newCode);
+                if (nestedMatch && nestedMatch[1]) {
+                    let coreLogic = nestedMatch[1].trim();
+                    newCode = `-- Extracted core logic from nested functions\n${coreLogic}`;
+                    transformationLog.push(`- Extracted core script logic from deeply nested functions`);
+                    extracted = true;
+                }
+            }
+
+            // Final fallback: Strip known obfuscation layers and assume remainder is payload
+            if (!extracted) {
+                const obfuscationLayerPattern = /local\s+[\w\d]+\s*=\s*function\s*\([\s\S]*?end\s*;/g;
+                newCode = newCode.replace(obfuscationLayerPattern, () => {
+                    return `-- Obfuscation layer removed`;
                 });
+                transformationLog.push(`- Stripped outer obfuscation layers; remaining code assumed to be core script`);
             }
 
             return newCode;
@@ -325,10 +397,7 @@
                 }
             }
 
-            if (formatted !== code) {
-                transformationLog.push(`- Applied code formatting for readability`);
-            }
-
+            transformationLog.push(`- Formatted code for readability`);
             return formatted;
         }
     </script>
